@@ -7,8 +7,6 @@ import Entities.Player;
 import Middleware.Case;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public class AIControl {
     public static int DEPTH;
