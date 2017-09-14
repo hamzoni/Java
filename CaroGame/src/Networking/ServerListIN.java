@@ -61,11 +61,11 @@ public class ServerListIN implements Runnable {
                 serverLists.add(receivePacket.getAddress().getHostAddress());
             
         } catch (SocketException ex) {
-            System.out.println("NO SERVER FOUND");
+           
         } catch (UnknownHostException ex) {
-            Logger.getLogger(ServerListIN.class.getName()).log(Level.SEVERE, null, ex);
+           
         } catch (IOException ex) {
-            Logger.getLogger(ServerListIN.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("NO SERVER FOUND");
         }
         frame.frame_c.update_list_servers_table(serverLists);
         c.close();

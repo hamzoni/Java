@@ -1,22 +1,26 @@
 
 package Entities;
 
-public class OfflineMessage {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class OfflineMessage implements Serializable {
     public static final int UNREAD = 0;
     public static final int READ = 1;
     
     private String sender;
     private String receiver;
-    private String message;
+    private ArrayList<String> messages;
     private int status;
 
     public OfflineMessage() {
+        messages = new ArrayList<String>();
     }
 
-    public OfflineMessage(String sender, String receiver, String message) {
+    public OfflineMessage(String sender, String receiver, ArrayList<String> message) {
         this.sender = sender;
         this.receiver = receiver;
-        this.message = message;
+        this.messages = message;
     }
     
 
@@ -36,12 +40,16 @@ public class OfflineMessage {
         this.receiver = receiver;
     }
 
-    public String getMessage() {
-        return message;
+    public ArrayList<String> getMessage() {
+        return messages;
     }
-
-    public void setMessage(String message) {
-        this.message = message;
+    
+    public void addMessage(String message) {
+        messages.add(message);
+    }
+    
+    public void setMessage(ArrayList<String> message) {
+        this.messages = message;
     }
 
     public int getStatus() {
@@ -51,6 +59,10 @@ public class OfflineMessage {
     public void setStatus(int status) {
         this.status = status;
     }
-    
+
+    @Override
+    public String toString() {
+        return "OfflineMessage{" + "sender=" + sender + ", receiver=" + receiver + ", messages=" + messages + ", status=" + status + '}';
+    }
     
 }

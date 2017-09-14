@@ -2,7 +2,10 @@
 package Action;
 
 import Controller.Controller;
+import DBContext.DBModel;
+import Entities.OfflineMessage;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class LoginButtonSubmit extends Action {
 
@@ -21,6 +24,8 @@ public class LoginButtonSubmit extends Action {
             this.c.getvLogin().setVisible(false);
             this.c.getvListUser().getLabel_fullName().setText(this.c.getData().getaUser().getFullName());
             this.c.getvListUser().setVisible(true);
+            
+            this.c.initServer();
         }
     }
     

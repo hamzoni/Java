@@ -1,6 +1,7 @@
 
 package Networking;
 
+import Controller.Controller;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -18,6 +19,12 @@ import java.util.logging.Logger;
 public class ServerListIn implements Runnable {
     // INITIATE THIS PACKAGE WHEN SEARCHING FOR SERVERS
     public ArrayList<String> serverLists;
+    private Controller c;
+
+    public ServerListIn(Controller c) {
+        this.c = c;
+    }
+    
     @Override
     public void run() {
         DatagramSocket c = null;
@@ -50,8 +57,14 @@ public class ServerListIn implements Runnable {
             String message = new String(receivePacket.getData()).trim();
             
             if (message.equals("DISCOVER_FUIFSERVER_RESPONSE")) {
-                receivePacket.getPort();
-                serverLists.add(receivePacket.getAddress().getHostAddress());
+                String serverAddress = receivePacket.getAddress().getHostAddress();
+                int serverPort = receivePacket.getPort();
+                
+                this.c.createClient(serverAddress, serverPort);
+                serverLists.add(serverAddress);
+                System.out.println("Found a server: " + serverAddress + ":" + serverPort);
+                
+                return;
             }
         } catch (SocketException ex) {
             System.out.println("NO SERVER FOUND");

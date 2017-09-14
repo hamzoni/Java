@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <form name="rectForm">
+            <table>
+                <tr>
+                    <td>Width</td>
+                    <td><input type="text" name="w" value="15"/></td>
+                </tr>
+                <tr>
+                    <td>Height</td>
+                    <td><input type="text" name="h" value="15"/></td>
+                </tr>
+                <tr>
+                    <td>X</td>
+                    <td><input type="text" name="x" value="15"/></td>
+                </tr>
+                <tr>
+                    <td>Y</td>
+                    <td><input type="text" name="y" value="15"/></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="button" value="add" id="addRect"/>
+                    </td>
+                    <td>
+                        <input type="button" value="random" id="random"/>
+                    </td>
+                    <td>
+                        <input type="button" value="auto" id="auto"/>
+                    </td>
+                </tr>
+                
+            </table>
+            <table id="rectList" border="1">
+                <thead>
+                    <tr>
+                        <th width="70px">Width</th>
+                        <th width="70px">Height</th>
+                        <th width="30px">X</th>
+                        <th width="30px">Y</th>
+                    </tr>
+                </thead>
+            </table>
+        </form>
+        <form method="POST" action="result">
+            <input type="hidden" name="data" id="data"/>
+            <input type="submit" value="Submit"/>
+        </form>
+        <script>
+            // collect data on client side
+            var f = window.rectForm;
+            var listRects = [];
+            
+            function createRect(w, h, x, y) {
+                this.w = w;
+                this.h = h;
+                this.x = x;
+                this.y = y;
+            }
+            
+            random.onclick = () => {
+                f.w.value = Math.floor(Math.random() * 600);
+                f.h.value = Math.floor(Math.random() * 600);
+                f.x.value = Math.floor(Math.random() * 600);
+                f.y.value = Math.floor(Math.random() * 600);
+            }
+            
+            auto.onclick = () => {
+                for (let i = 0; i < 300; i++) {
+                    random.click();
+                    addRect.click();
+                }
+            }
+            
+            addRect.onclick = () => {
+                var dt = [f.w.value, f.h.value, f.x.value, f.y.value];
+                var tr = document.createElement('tr');
+                var td = [];
+                for (var i = 0; i < dt.length; i++) {
+                    td[i] = document.createElement('td');
+                    td[i].innerHTML = dt[i];
+                    tr.append(td[i]);
+                }
+                rectList.append(tr);
+                listRects.push(new createRect(dt[0], dt[1], dt[2], dt[3]));
+                data.value = JSON.stringify(listRects);
+            }
+        </script>
+    </body>
+</html>

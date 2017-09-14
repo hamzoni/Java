@@ -1,6 +1,7 @@
 
 package Networking;
 
+import Controller.Controller;
 import Entities.User;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ public class Client implements Runnable {
     private User user;
     public ArrayList<User> users;
     private boolean running;
+    private Controller c;
     
     public Client() {
     }
@@ -34,7 +36,7 @@ public class Client implements Runnable {
         try {
             this.socket = new Socket(host, port);
             this.running = true;
-            begin();
+            connect();
             new Thread(new ServerHandler(this)).start();
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -42,7 +44,7 @@ public class Client implements Runnable {
        
     }
     
-    public void begin() {
+    public void connect() {
         Package pkg = new Package();
         pkg.command = Package.REGISTER_TO_SERVER;
         pkg.source = this.user;
@@ -59,6 +61,23 @@ public class Client implements Runnable {
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void requestChat(User targetUser) {
+        Package pkg = new Package();
+        pkg.command = Package.REQUEST_CHAT;
+        pkg.source = user;
+        pkg.target = targetUser;
+        submit(pkg);
+    }
+
+    public void sendMessage(User source, User target, String message) {
+        Package pkg = new Package();
+        pkg.command = Package.SEND_MESSAGE;
+        pkg.data = message;
+        pkg.source = source;
+        pkg.target = target;
+        submit(pkg);
     }
     
     class ServerHandler implements Runnable {
@@ -77,7 +96,28 @@ public class Client implements Runnable {
                     ois = new ObjectInputStream(is);
                     Package receivedData = (Package) ois.readObject();
                     switch (receivedData.command) {
-                       
+                        case Package.REGISTER_TO_SERVER:
+                            users = receivedData.usersList;
+                            c.getData().setUsersOnline(users);
+                            c.getListUserData().updateList();
+                            break;
+                        case Package.USER_LIST_SERVER:
+                            users = receivedData.usersList;
+                            c.getData().setUsersOnline(users);
+                            /*
+                            * update list
+                            * and make sure no one can send offline message to online user
+                            */
+                            c.getListUserData().updateList();
+                            break;
+                        case Package.REQUEST_CHAT:
+                            c.showChatBox(receivedData.source);
+                            break;
+                        case Package.RECEIVE_MESSAGE:
+                            User sender = receivedData.source;
+                            String message = (String) receivedData.data;
+                            c.updateChatBox(sender, message);
+                            break;
                     }
                 } catch (IOException ex) {
                     break;
@@ -94,6 +134,10 @@ public class Client implements Runnable {
         }
     }
 
+    public void setController(Controller c) {
+        this.c = c;
+    }
+    
     public String getHost() {
         return host;
     }
@@ -114,6 +158,30 @@ public class Client implements Runnable {
         return users;
     }
 
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+    
     public boolean isRunning() {
         return running;
     }

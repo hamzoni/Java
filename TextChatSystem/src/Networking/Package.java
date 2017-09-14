@@ -6,27 +6,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Package implements Serializable {
-    public ArrayList<User> playersInfo;
-    public String targetID;
-    public String sourceID;
+    public ArrayList<User> usersList;
     public User target;
     public User source;
     public int command;
+    public Object data;
     
     // RETRIEVE PLAYER LIST TO NEW CONNECTED PLAYER
     public static final int REGISTER_TO_SERVER = 0;
-    // SEND GAME DATA TO ALL OTHER PLAYERS
-    public static final int SEND_DATA_TO_SERVER = 1;
+
+    // NOTIFY THE TARGET USER TO OPEN DIALOG AND START CHATTING
+    public static final int REQUEST_CHAT = 1;
+    
     // UPDATE USER LIST FOR OTHER PLAYERS
     public static final int USER_LIST_SERVER = 2;
-    // SEND PLAY REQUEST TO TARGETED PLAEYER
-    public static final int REQUEST_PLAY = 3;
-    // ACCEPT PLAY REQUEST FROM SOURCE PLAYER
-    public static final int ACCEPT_PLAY = 4;
-    // PLAYER STOP PLAYING
-    public static final int GAME_END = 5;
-    // SERVER ACTIVELY CLOSE CONNECTION
-    public static final int CLOSE_SERVER = 6;
-    // CLIENT ACTIVELY CLOSE CONNECTION
-    public static final int EXIT_SERVER = -1;
+    
+    // SEND MESSAGE TO TARGET USER
+    public static final int SEND_MESSAGE = 3;
+    
+    // RECEIVE MESSAGE FROM SERVER
+    public static final int RECEIVE_MESSAGE = 4;
+
 }

@@ -1,5 +1,6 @@
 package Networking;
 
+import Controller.Controller;
 import Entities.User;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,14 +15,15 @@ import java.util.logging.Logger;
 
 public class Server implements Runnable {
     
-    public static final int PORT = (int) Math.floor(Math.random() * 9999);;
+//    public static final int PORT = (int) Math.floor(Math.random() * 9999);
+    public static final int PORT = 1212;
     private ArrayList<Member> clients;
-    private int n_conns;
     private ServerSocket server;
+    private Controller c;
 
-    public Server() {
+    public Server(Controller c) {
         this.clients = new ArrayList<Member>();
-        this.n_conns = 0;
+        this.c = c;
     }
 
     public ArrayList<Member> getClients() {
@@ -36,21 +38,26 @@ public class Server implements Runnable {
     public void run() {
         try {
             server = new ServerSocket(PORT);
-            System.out.println("Port " + PORT + " is now open.");
+            this.c.createClient(null, -1);
+            System.out.println("Server is running on port: " + PORT);
             while (!server.isClosed()) {
                 try {
                     Socket socket = server.accept();
+                    
                     Member member = new Member();
                     member.setSocket(socket);
                     clients.add(member);
                     ClientHandler CH = new ClientHandler(member);
+                    
                     new Thread(CH).start();
                 } catch (IOException ex) {
                     System.out.println("Server is closed");
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("There is already a server run on this address");
+            this.c.listServer();
+            return;
         }
     }
     
@@ -63,9 +70,9 @@ public class Server implements Runnable {
         }
 
         public ArrayList<User> getUsersList() {
-            ArrayList<User> playersInfo = new ArrayList<User>();
-            for (Member m : clients) playersInfo.add(m.getUser());
-            return playersInfo;
+            ArrayList<User> usersList = new ArrayList<User>();
+            for (Member m : clients) usersList.add(m.getUser());
+            return usersList;
         }
 
         @Override
@@ -82,12 +89,13 @@ public class Server implements Runnable {
                         is = client.getSocket().getInputStream();
                         ObjectInputStream ois = new ObjectInputStream(is);
                         Package receivedData = (Package) ois.readObject();
+                        
                         switch (receivedData.command) {
                             case Package.REGISTER_TO_SERVER:
                                 System.out.println(receivedData.source.getLogin()
                                         + " registered to the server.");
                                 client.setUser(receivedData.source);
-                                receivedData.playersInfo = getUsersList();
+                                receivedData.usersList = getUsersList();
                                 oos.writeObject(receivedData);
                                 
                                 for (Member m : clients) {
@@ -98,7 +106,25 @@ public class Server implements Runnable {
                                         other_oos.writeObject(receivedData);
                                     }
                                 }
-                                n_conns++;
+                                break;
+                            case Package.REQUEST_CHAT:
+                                for (Member m : clients) {
+                                    if (m.getUser().getLogin().equals(receivedData.target.getLogin())) {
+                                        OutputStream other_os = m.getSocket().getOutputStream();
+                                        ObjectOutputStream other_oos = new ObjectOutputStream(other_os);
+                                        other_oos.writeObject(receivedData);
+                                    }
+                                }
+                                break;
+                            case Package.SEND_MESSAGE:
+                                for (Member m : clients) {
+                                    if (m.getUser().getLogin().equals(receivedData.target.getLogin())) {
+                                        OutputStream other_os = m.getSocket().getOutputStream();
+                                        ObjectOutputStream other_oos = new ObjectOutputStream(other_os);
+                                        receivedData.command = Package.RECEIVE_MESSAGE;
+                                        other_oos.writeObject(receivedData);
+                                    }
+                                }
                                 break;
                         }
                     } catch (IOException ex) {

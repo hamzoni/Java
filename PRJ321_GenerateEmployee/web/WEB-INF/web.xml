@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+    <servlet>
+        <servlet-name>Employee</servlet-name>
+        <servlet-class>Controller.EmployeeController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EmployeeView</servlet-name>
+        <servlet-class>View.EmployeeView</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Employee</servlet-name>
+        <url-pattern>/Controller/Employee</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EmployeeView</servlet-name>
+        <url-pattern>/View/Employee</url-pattern>
+    </servlet-mapping>
+    
+    
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>
