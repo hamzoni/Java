@@ -250,7 +250,6 @@ public class ChatGUI extends javax.swing.JFrame {
         }
         
         textarea.setFont(font);
-
     }//GEN-LAST:event_toggle_boldActionPerformed
 
     private void toggle_italicActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toggle_italicActionPerformed
