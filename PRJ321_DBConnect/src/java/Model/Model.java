@@ -19,6 +19,7 @@ public abstract class Model<E> {
     
     public abstract boolean create(E t);
     public abstract ArrayList<E> list();
+    public abstract E search(int id);
     public abstract boolean update(E t);
     public abstract <T> boolean delete(T t);
     

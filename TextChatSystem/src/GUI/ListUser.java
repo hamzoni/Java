@@ -1,6 +1,7 @@
-
 package GUI;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -23,8 +24,11 @@ public class ListUser extends javax.swing.JFrame {
         button_close = new javax.swing.JButton();
         button_chat = new javax.swing.JButton();
         button_offlineMessages = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        server_status = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setText("Login As: ");
 
@@ -40,6 +44,11 @@ public class ListUser extends javax.swing.JFrame {
 
         button_offlineMessages.setText("Offline Message");
 
+        jLabel2.setText("Server");
+
+        server_status.setForeground(new java.awt.Color(51, 255, 51));
+        server_status.setText("ON");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -49,19 +58,24 @@ public class ListUser extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(button_chat, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(button_close)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(button_offlineMessages, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(label_fullName))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(button_chat, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabel3)
+                                .addGap(55, 55, 55)
+                                .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(button_close)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(button_offlineMessages)))
-                        .addGap(0, 1, Short.MAX_VALUE)))
+                                .addComponent(server_status)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -72,7 +86,10 @@ public class ListUser extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(label_fullName))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2)
+                    .addComponent(server_status))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -86,7 +103,7 @@ public class ListUser extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-    
+
     public JButton getButton_chat() {
         return button_chat;
     }
@@ -126,15 +143,21 @@ public class ListUser extends javax.swing.JFrame {
     public void setList_users(JList<String> list_users) {
         this.list_users = list_users;
     }
-    
+
+    public JLabel getServer_status() {
+        return server_status;
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_chat;
     private javax.swing.JButton button_close;
     private javax.swing.JButton button_offlineMessages;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel label_fullName;
     private javax.swing.JList<String> list_users;
+    private javax.swing.JLabel server_status;
     // End of variables declaration//GEN-END:variables
 }

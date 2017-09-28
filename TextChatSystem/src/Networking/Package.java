@@ -26,5 +26,10 @@ public class Package implements Serializable {
     
     // RECEIVE MESSAGE FROM SERVER
     public static final int RECEIVE_MESSAGE = 4;
-
+    
+    // ANNOUNCE SERVER CLOSING
+    public static final int SERVER_CLOSING = 5;
+    
+    // ANNOUNCE CLIENT CLOSING
+    public static final int CLIENT_CLOSING = 6;
 }

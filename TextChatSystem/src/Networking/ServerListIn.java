@@ -60,6 +60,7 @@ public class ServerListIn implements Runnable {
                 String serverAddress = receivePacket.getAddress().getHostAddress();
                 int serverPort = receivePacket.getPort();
                 
+                // Connect to first found server
                 this.c.createClient(serverAddress, serverPort);
                 serverLists.add(serverAddress);
                 System.out.println("Found a server: " + serverAddress + ":" + serverPort);

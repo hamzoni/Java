@@ -8,13 +8,37 @@
         <servlet-name>FruitListView</servlet-name>
         <servlet-class>View.FruitListView</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FruitCreateController</servlet-name>
+        <servlet-class>Controller.FruitCreateController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FruitUpdateController</servlet-name>
+        <servlet-class>Controller.FruitUpdateController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>FruitDeleteController</servlet-name>
+        <servlet-class>Controller.FruitDeleteController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>FruitListController</servlet-name>
-        <url-pattern>/controller/list</url-pattern>
+        <url-pattern>/fruit/list</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FruitListView</servlet-name>
-        <url-pattern>/view/list</url-pattern>
+        <url-pattern>/fruit/list/view</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FruitCreateController</servlet-name>
+        <url-pattern>/fruit/create</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FruitUpdateController</servlet-name>
+        <url-pattern>/fruit/update</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FruitDeleteController</servlet-name>
+        <url-pattern>/fruit/delete</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -14,4 +14,5 @@ public class N_Booking implements Serializable {
     public N_Booking(Booking data) {
         this.data = data;
     }
+    
 }

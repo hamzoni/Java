@@ -19,7 +19,6 @@ public class Client implements Runnable {
     private Socket socket;
     private User user;
     public ArrayList<User> users;
-    private boolean running;
     private Controller c;
     
     public Client() {
@@ -35,13 +34,11 @@ public class Client implements Runnable {
     public void run() {
         try {
             this.socket = new Socket(host, port);
-            this.running = true;
             connect();
             new Thread(new ServerHandler(this)).start();
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-       
     }
     
     public void connect() {
@@ -50,7 +47,21 @@ public class Client implements Runnable {
         pkg.source = this.user;
         submit(pkg);
     }
-  
+    
+    public void close() {
+        Package pkg = packaging(null, null, Package.CLIENT_CLOSING);
+        submit(pkg);
+    }
+    
+    private Package packaging(User target, Object data, int cmd) {
+        Package pkg = new Package();
+        pkg.source = user;
+        pkg.target = target;
+        pkg.data = data;
+        pkg.command = cmd;
+        return pkg;
+    }
+    
     private void submit(Package pkg) {
         ObjectOutputStream oos = null;
         try {
@@ -64,72 +75,79 @@ public class Client implements Runnable {
     }
 
     public void requestChat(User targetUser) {
-        Package pkg = new Package();
-        pkg.command = Package.REQUEST_CHAT;
-        pkg.source = user;
-        pkg.target = targetUser;
+        Package pkg = packaging(targetUser, null, Package.REQUEST_CHAT);
         submit(pkg);
     }
 
-    public void sendMessage(User source, User target, String message) {
-        Package pkg = new Package();
-        pkg.command = Package.SEND_MESSAGE;
-        pkg.data = message;
-        pkg.source = source;
-        pkg.target = target;
+    public void sendMessage(User target, String message) {
+        Package pkg = packaging(target, message, Package.SEND_MESSAGE);
         submit(pkg);
     }
     
     class ServerHandler implements Runnable {
         private Client client;
+        
         public ServerHandler(Client client) {
             this.client = client;
         }
         
         @Override
         public void run() {
+            boolean alive = true;
             InputStream is =  null;
             ObjectInputStream ois = null;
-            while (running && !socket.isClosed()) {
+            while (alive) {
                 try {
-                   is = socket.getInputStream();
+                    is = socket.getInputStream();
                     ois = new ObjectInputStream(is);
-                    Package receivedData = (Package) ois.readObject();
-                    switch (receivedData.command) {
+                    Package pkg = (Package) ois.readObject();
+                    switch (pkg.command) {
                         case Package.REGISTER_TO_SERVER:
-                            users = receivedData.usersList;
-                            c.getData().setUsersOnline(users);
-                            c.getListUserData().updateList();
+                            users = pkg.usersList;
+                            c.getData().setUsersOnline(users, null);
+                            c.getUserListCtrl().updateList();
                             break;
                         case Package.USER_LIST_SERVER:
-                            users = receivedData.usersList;
-                            c.getData().setUsersOnline(users);
-                            /*
-                            * update list
-                            * and make sure no one can send offline message to online user
-                            */
-                            c.getListUserData().updateList();
+                            users = pkg.usersList;
+                            c.getData().setUsersOnline(users, pkg.source);
+                            c.getUserListCtrl().updateList();
                             break;
                         case Package.REQUEST_CHAT:
-                            c.showChatBox(receivedData.source);
+                            c.showChatBox(pkg.source, null);
                             break;
                         case Package.RECEIVE_MESSAGE:
-                            User sender = receivedData.source;
-                            String message = (String) receivedData.data;
+                            User sender = pkg.source;
+                            String message = (String) pkg.data;
                             c.updateChatBox(sender, message);
+                            break;
+                        case Package.SERVER_CLOSING:
+                            pkg.source = user;
+                            // Turn offline with all users
+                            alive = false;
+                            c.getData().setUsersOnline(new ArrayList<User>(), null);
+                            c.getUserListCtrl().updateList();
+                            
+                            // Close stream and terminate the client thread
+                            submit(pkg);
+                            
+                            c.getUserListCtrl().updateServerStatus(false);
+                            c.client = null;
                             break;
                     }
                 } catch (IOException ex) {
+                    System.out.println("Unable to transfer data");
                     break;
                 } catch (ClassNotFoundException ex) {
                     break;
                 }
-            }
-            try {
-                socket.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-
+                if (!alive) {
+                    try {
+                        is.close();
+                        return;
+                    } catch (IOException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
     }
@@ -176,14 +194,6 @@ public class Client implements Runnable {
 
     public void setUsers(ArrayList<User> users) {
         this.users = users;
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
-    }
-    
-    public boolean isRunning() {
-        return running;
     }
     
 }

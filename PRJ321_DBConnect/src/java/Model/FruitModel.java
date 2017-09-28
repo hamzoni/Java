@@ -54,10 +54,10 @@ public class FruitModel extends Model<Fruit> {
     @Override
     public boolean update(Fruit fruit) {
         try {
-            PreparedStatement stmt = con.prepareStatement("UPDATE " + this.table + "SET name = ? , price = ?");
+            PreparedStatement stmt = con.prepareStatement("UPDATE " + this.table + " SET name = ? , price = ?");
             stmt.setString(1, fruit.getName());
             stmt.setFloat(2, fruit.getPrice());
-            return stmt.execute();
+            return stmt.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(FruitModel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -74,6 +74,26 @@ public class FruitModel extends Model<Fruit> {
             Logger.getLogger(FruitModel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+
+    @Override
+    public Fruit search(int id) {
+        Fruit fruit = null;
+        try {
+            Statement stmt = con.createStatement();
+            String query = "SELECT * FROM " + this.table + " WHERE id = " + id;
+            ResultSet rs = stmt.executeQuery(query);
+            Fruit mfruit = new Fruit();
+            while (rs.next()) {
+                mfruit.setId(rs.getInt("id"));
+                mfruit.setName(rs.getString("name"));
+                mfruit.setPrice(rs.getFloat("price"));
+                return mfruit;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(FruitModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return fruit;
     }
     
 }

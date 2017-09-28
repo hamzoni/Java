@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 public class LL_Customer implements Serializable {
      
-    private N_Customer head;
-    private N_Customer tail;
+    public N_Customer head;
+    public N_Customer tail;
     
     public void display() {
         N_Customer n = head;
@@ -73,7 +73,11 @@ public class LL_Customer implements Serializable {
         while (n != null) {
             if (n.data.ccode.equals(ccode)) {
                 N_Customer pn = findPrev(n);
-                pn.next = n.next;
+                if (pn != null) {
+                    pn.next = n.next;
+                } else {
+                    head = n.next;
+                }
                 return;
             }
             n = n.next;
@@ -107,6 +111,26 @@ public class LL_Customer implements Serializable {
             }
             n = n.next;
         }
+    }
+
+    public boolean duplicateTCode(String ccode) {
+        N_Customer n = head;
+        while (n != null) {
+            if (n.data.ccode.equals(ccode))
+                return true;
+            n = n.next;
+        }
+        return false;
+    }
+
+    public int size() {
+        int counter = 0;
+        N_Customer c = head;
+        while (c != null) {
+            counter ++;
+            c = c.next;
+        }
+        return counter;
     }
     
 }

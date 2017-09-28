@@ -18,6 +18,17 @@ public class LL_Train implements Serializable {
         System.out.println();
     }
     
+    public void changeName() {
+        N_Train n = head;
+        while (n != null) {
+            if (n.data.tcode.equals("2")) {
+                n.data.train_name = "XY";
+                break;
+            }
+            n = n.next;
+        }
+    }
+    
     public int size() {
         N_Train n = head;
         int counter = 0;
@@ -118,6 +129,22 @@ public class LL_Train implements Serializable {
         }
     }
     
+    public void deleteByName(String name) {
+        N_Train n = head;
+        while (n != null) {
+            if (n.data.train_name.equals(name)) {
+                N_Train pn = findPrev(n);
+                if (pn != null) {
+                    pn.next = n.next;
+                } else {
+                    head = n.next;
+                }
+                return;
+            }
+            n = n.next;
+        }
+    }
+    
     public void deleteBefore(String tcode) {
         N_Train n = head;
         while (n != null) {
@@ -142,6 +169,34 @@ public class LL_Train implements Serializable {
                     k.next.data = t;
                 }
                 k = k.next;
+            }
+            n = n.next;
+        }
+    }
+    
+    public void sortBySeat() {
+        N_Train n = head;
+        while (n != null) {
+            N_Train k = head;
+            while (k != null) {
+                if (k.next == null) break;
+                if (k.data.seat > k.next.data.seat) {
+                    Train t = k.data;
+                    k.data = k.next.data;
+                    k.next.data = t;
+                }
+                k = k.next;
+            }
+            n = n.next;
+        }
+    }
+
+    public void updateBooked(String tcode, int seat) {
+        N_Train n = head;
+        while (n != null) {
+            if (n.data.tcode.equals(tcode)) {
+                n.data.booked += seat;
+                return;
             }
             n = n.next;
         }

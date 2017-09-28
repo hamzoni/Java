@@ -3,6 +3,8 @@ package Controller;
 
 import GUI.*;
 import Action.*;
+import Action.ChatboxController.ChatboxButtonSend;
+import Action.ChatboxController.ChatboxMessageListing;
 import DBContext.DBModel;
 import Entities.OfflineMessage;
 import Entities.User;
@@ -11,14 +13,15 @@ import Networking.*;
 import java.util.ArrayList;
 
 public class Controller {
-
+    
     private FileController fc;
-
+    // Networking controller
     public Server server;
     public Client client;
     public ServerListIn upd_in;
     public ServerListOut upd_out;
-
+    
+    // All Swing views
     private Login vLogin;
     private Register vRegister;
     private ListUser vListUser;
@@ -26,7 +29,12 @@ public class Controller {
     private ArrayList<Chat> vChat;
     private ArrayList<ChatboxMessageListing> listMessageData;
     
-    private UserListing listUserData;
+    // All Controllers for each Views (Events Handler)
+    private UserListController userListCtrl;
+    private ChatboxController chatboxCtrl;
+    private LoginController loginCtrl;
+    private OffMsgController offMsgCtrl;
+    private RegisterController regCtrl;
 
     private DBModel data;
 
@@ -52,6 +60,7 @@ public class Controller {
         new Thread(server).start();
         new Thread(upd_out).start();
     }
+    
     public void createClient(String address, int port) {
         String serverAddress = null;
         int serverPort = -1;
@@ -80,35 +89,21 @@ public class Controller {
     private void setupComponents() {
         vLogin = new Login();
         vRegister = new Register();
-        
         vListUser = new ListUser();
-        listUserData = new UserListing(this);
-        
         vOffMsg = new ChatOffline();
-        
         vChat = new ArrayList<Chat>();
-        listMessageData = new ArrayList<ChatboxMessageListing>();
-
-        // set up event listeners for each buttons
-        vLogin.getButton_login().addActionListener(new LoginButtonSubmit(this));
-        vLogin.getButton_cancel().addActionListener(new LoginButtonCancel(this));
-        vLogin.getButton_register().addActionListener(new LoginButtonRegister(this));
-
-        vRegister.getButton_cancle().addActionListener(new RegisterButtonCancel(this));
-        vRegister.getButton_register().addActionListener(new RegisterButtonSubmit(this));
         
-        vListUser.getList_users().addMouseListener(listUserData);
-        vListUser.getButton_chat().addActionListener(new UserListButtonChat(this));
-        vListUser.getButton_offlineMessages().addActionListener(new OffMsgListing(this));
-        vListUser.getButton_close().addActionListener(new UserListButtonClose(this));
-
-        vOffMsg.getButton_read().addActionListener(new OffMsgButtonRead(this));
-        vOffMsg.getButton_close().addActionListener(new OffMsgButtonClose(this));
+        listMessageData = new ArrayList<ChatboxMessageListing>();
+        
+        offMsgCtrl = new OffMsgController(vOffMsg, this);
+        userListCtrl = new UserListController(vListUser, this);
+        chatboxCtrl = new ChatboxController(this);
+        loginCtrl = new LoginController(vLogin, this);
+        regCtrl = new RegisterController(vRegister, this);
         
     }
     
     public void updateChatBox(User sender, String message) {
-        System.out.println("And the sender of this message is: " + sender.getLogin());
         for (ChatboxMessageListing account : listMessageData) {
             if (account.getChat().receiver.getLogin().equals(sender.getLogin())) {
                 account.updateMessagesList(sender, message);
@@ -119,28 +114,37 @@ public class Controller {
     
     public boolean isAlreadyChat(User user) {
         for (Chat chat : vChat) {
-            if (!chat.isVisible()) return false;
             if (chat.userA.getLogin().equals(user.getLogin()) ||
                 chat.userB.getLogin().equals(user.getLogin())) 
                 return true;
         }
         return false;
     }
-    
-    public void showChatBox(User targetUser) {
+
+     public void showChatBox(User targetUser, ArrayList<OfflineMessage> msgs) {
         if (!isAlreadyChat(targetUser)) {
-            System.out.println("Receive request from : " + targetUser.getLogin());
             Chat chat = new Chat();
             chat.setVisible(true);
             chat.receiver = targetUser;
             chat.userA = targetUser;
             chat.userB = this.data.getaUser();
             chat.isOnline = data.checkExistOnline(targetUser);
-            chat.getButton_sendMessage().addActionListener(new ChatboxButtonSend(this, chat));
-            listMessageData.add(new ChatboxMessageListing(this, chat));
+            
+            if (msgs != null) {
+                for (OfflineMessage msg : msgs) {
+                    for (String str : msg.getMessage()) {
+                        chat.getTextarea_chatbox().append(msg.getSender() + ": " + str + "\n");
+                    }
+                }
+            }
+            
+            chat.getButton_sendMessage().addActionListener(chatboxCtrl.new ChatboxButtonSend(chat));
+            listMessageData.add(chatboxCtrl.new ChatboxMessageListing(this, chat));
             vChat.add(chat);
         }
+        
     }
+    
 
     public Login getvLogin() {
         return vLogin;
@@ -162,36 +166,42 @@ public class Controller {
         return data;
     }
 
-    public UserListing getListUserData() {
-        return listUserData;
-    }
-
     public ArrayList<ChatboxMessageListing> getListMessageData() {
         return listMessageData;
     }
-
-    public void showChatBox(User targetUser, ArrayList<OfflineMessage> msgs) {
-        if (!isAlreadyChat(targetUser)) {
-            System.out.println("Receive request from : " + targetUser.getLogin());
-            Chat chat = new Chat();
-            chat.setVisible(true);
-            chat.receiver = targetUser;
-            chat.userA = targetUser;
-            chat.userB = this.data.getaUser();
-            chat.isOnline = data.checkExistOnline(targetUser);
-            chat.getButton_sendMessage().addActionListener(new ChatboxButtonSend(this, chat));
-            
-            String oldMsgs = "";
-            for (OfflineMessage msg : msgs) {
-                for (String str : msg.getMessage()) {
-                    oldMsgs += msg.getSender() + ": " + str + "\n";
-                }
-            }
-            chat.getTextarea_chatbox().setText(oldMsgs);
-            listMessageData.add(new ChatboxMessageListing(this, chat));
-            vChat.add(chat);
-        }
-        
-    }
     
+    public void closeClient() {
+        if (client.getSocket() == null) return;
+        client.close();
+    }
+   
+    public void closeServer() {
+        if (server.getServer() == null) return;
+        server.close();
+    }
+
+    public UserListController getUserListCtrl() {
+        return userListCtrl;
+    }
+
+    public void setUserListCtrl(UserListController userListCtrl) {
+        this.userListCtrl = userListCtrl;
+    }
+
+    public ChatboxController getChatboxCtrl() {
+        return chatboxCtrl;
+    }
+
+    public LoginController getLoginCtrl() {
+        return loginCtrl;
+    }
+
+    public OffMsgController getOffMsgCtrl() {
+        return offMsgCtrl;
+    }
+
+
+    public ArrayList<Chat> getvChat() {
+        return vChat;
+    }
 }

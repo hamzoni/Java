@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 public class LL_Booking implements Serializable {
      
-    private N_Booking head;
-    private N_Booking tail;
+    public N_Booking head;
+    public N_Booking tail;
     
     public void display() {
         N_Booking n = head;
@@ -16,6 +16,17 @@ public class LL_Booking implements Serializable {
             n = n.next;
         }
         System.out.println();
+    }
+    
+    public boolean duplicateBooking(String tcode, String ccode) {
+        N_Booking n = head;
+        while (n != null) {
+            if (n.data.tcode.equals(tcode) && n.data.ccode.equals(ccode)) {
+                return true;
+            }
+            n = n.next;
+        }
+        return false;
     }
     
     public boolean isEmpty() {
@@ -98,13 +109,61 @@ public class LL_Booking implements Serializable {
             N_Booking k = head;
             while (k != null) {
                 if (k.next == null) break;
-                if (k.data.ccode.compareTo(k.next.data.ccode) < 0) {
+                if (k.data.tcode.compareTo(k.next.data.tcode) > 0) {
                     Booking t = k.data;
                     k.data = k.next.data;
                     k.next.data = t;
                 }
                 k = k.next;
             }
+            n = n.next;
+        }
+        
+        n = head;
+        int i = 0;
+        int a;
+        int b = -1;
+        while (n != null) {
+            
+            if (i > b) {
+                a = i;
+                b = i;
+                N_Booking m = n;
+                while (m != null) {
+                    if (m.next == null) break;
+                    if (m.next.data.tcode.equals(m.data.tcode)) {
+                        b++;
+                    } else {
+                        break;
+                    }
+                    m = m.next;
+                }
+                sortByTCode(a, b, n);
+            }
+            
+            i++;
+            n = n.next;
+        }
+    }
+    
+    private void sortByTCode(int a, int b, N_Booking n) {
+        int i = a;
+        while (n != null) {
+
+            int j = i;
+            N_Booking m = n;
+            while (m != null) {
+                if (j == b || m.next == null) break;
+                if (m.data.ccode.compareTo(m.next.data.ccode) > 0) {
+                    Booking temp = m.data;
+                    m.data = m.next.data;
+                    m.next.data = temp;
+                }
+                j++;
+                m = m.next;
+            }
+
+            i++;
             n = n.next;
         }
     }

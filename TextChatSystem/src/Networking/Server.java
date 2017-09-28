@@ -20,6 +20,7 @@ public class Server implements Runnable {
     private ArrayList<Member> clients;
     private ServerSocket server;
     private Controller c;
+    private int leaverCounter;
 
     public Server(Controller c) {
         this.clients = new ArrayList<Member>();
@@ -33,7 +34,26 @@ public class Server implements Runnable {
     public ServerSocket getServer() {
         return server;
     }
-    
+    public void close() {
+        System.out.println("Closing server...");
+        // Telling all clients that server is about to close
+        leaverCounter = 0;
+        for (Member client : clients) {
+            ObjectOutputStream oos = null;
+            try {
+                Socket socket = client.getSocket();
+                Package pkg = new Package();
+                pkg.command = Package.SERVER_CLOSING;
+                pkg.target = client.getUser();
+                OutputStream os = socket.getOutputStream();
+                oos = new ObjectOutputStream(os);
+                oos.writeObject(pkg);
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        // Server will be waiting for all clients to response that they are out of server.
+    }
     @Override
     public void run() {
         try {
@@ -46,8 +66,11 @@ public class Server implements Runnable {
                     
                     Member member = new Member();
                     member.setSocket(socket);
-                    clients.add(member);
+                    
                     ClientHandler CH = new ClientHandler(member);
+                    member.setHandler(CH);
+                    
+                    clients.add(member);
                     
                     new Thread(CH).start();
                 } catch (IOException ex) {
@@ -55,6 +78,9 @@ public class Server implements Runnable {
                 }
             }
         } catch (IOException ex) {
+            /* Since this program is running localhost only.
+            * Thus after creating server fail, the client will immediately looking for a server to connect
+            */
             System.out.println("There is already a server run on this address");
             this.c.listServer();
             return;
@@ -83,7 +109,7 @@ public class Server implements Runnable {
                 os.flush();
                 oos = new ObjectOutputStream(os);
                 oos.flush();
-                while (this.running && !client.getSocket().isClosed() && !server.isClosed()) {
+                while (this.running) {
                     InputStream is = null;
                     try {
                         is = client.getSocket().getInputStream();
@@ -97,7 +123,6 @@ public class Server implements Runnable {
                                 client.setUser(receivedData.source);
                                 receivedData.usersList = getUsersList();
                                 oos.writeObject(receivedData);
-                                
                                 for (Member m : clients) {
                                     if (m != client) {
                                         OutputStream other_os = m.getSocket().getOutputStream();
@@ -126,6 +151,34 @@ public class Server implements Runnable {
                                     }
                                 }
                                 break;
+                            case Package.SERVER_CLOSING:
+                                leaverCounter++;
+                                if (leaverCounter == clients.size()) {
+                                    server.close();
+                                    this.running = false;
+                                    System.out.println("Server closed.");
+                                }
+                                break;
+                            case Package.CLIENT_CLOSING:
+                                this.running = false;
+                                for (int i = 0; i < clients.size(); i++) {
+                                    if (clients.get(i) == client) {
+                                        clients.get(i).getHandler().running = false;
+                                        clients.get(i).getSocket().close();
+                                        clients.remove(i);
+                                        break;
+                                    }
+                                }
+                                for (Member m : clients) {
+                                    if (m != client) {
+                                        OutputStream other_os = m.getSocket().getOutputStream();
+                                        ObjectOutputStream other_oos = new ObjectOutputStream(other_os);
+                                        receivedData.usersList = getUsersList();
+                                        receivedData.command = Package.USER_LIST_SERVER;
+                                        other_oos.writeObject(receivedData);
+                                    }
+                                }
+                                break;
                         }
                     } catch (IOException ex) {
                         break;
@@ -133,7 +186,9 @@ public class Server implements Runnable {
                         break;
                     }
                 }
-                client.getSocket().close();
+                if (!client.getSocket().isClosed()) client.getSocket().close();
+                if (!this.running) return;
+                
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }

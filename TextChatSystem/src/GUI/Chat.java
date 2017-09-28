@@ -32,6 +32,7 @@ public class Chat extends JDialog {
         sendTo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setResizable(false);
 
         sendFrom.setText("A");
 
@@ -107,6 +108,8 @@ public class Chat extends JDialog {
     public JTextArea getTextarea_chatbox() {
         return textarea_chatbox;
     }
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_sendMessage;

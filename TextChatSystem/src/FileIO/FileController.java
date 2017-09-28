@@ -44,9 +44,9 @@ public class FileController {
             
             return data;
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("File " + fn + " not found.");
         } catch (IOException ex) {
-            Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Unable to read file.");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FileController.class.getName()).log(Level.SEVERE, null, ex);
         }

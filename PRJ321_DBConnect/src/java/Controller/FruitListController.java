@@ -3,6 +3,7 @@ package Controller;
 
 import Entities.Fruit;
 import Model.FruitModel;
+import Model.ModelGroup;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.servlet.ServletException;
@@ -14,10 +15,11 @@ public class FruitListController extends HttpServlet {
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        FruitModel fruitMdl = new FruitModel("fruits");
-        ArrayList<Fruit> fruits = fruitMdl.list();
+        ArrayList<Fruit> fruits = ModelGroup.fruitMdl.list();
+        
+        request.setAttribute("title", "List Fruit");
         request.setAttribute("fruitsList", fruits);
-        request.getRequestDispatcher("../view/list").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/FruitList.jsp").forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

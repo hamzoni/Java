@@ -24,6 +24,7 @@ public class ChatOffline extends javax.swing.JFrame {
         button_read = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jLabel1.setText("Login as ");
 
@@ -73,6 +74,7 @@ public class ChatOffline extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     public JButton getButton_close() {

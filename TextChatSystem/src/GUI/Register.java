@@ -30,6 +30,7 @@ public class Register extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         button_register.setText("register");
         button_register.addActionListener(new java.awt.event.ActionListener() {
