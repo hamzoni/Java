@@ -1,0 +1,81 @@
+
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <%@ include file="/Components/Header.jsp" %>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h2 class="subtitle">
+                    <div class="columns">
+                        <div class="column">
+                        </div>
+                        <div class="column is-half">
+
+                            <form method="post" action="">
+                                <div class="field">
+                                    <label class="label">Username</label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input class="input is-success" type="text" placeholder="Username / Email" value="">
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-user"></i>
+                                        </span>
+                                        <span class="icon is-small is-right">
+                                            <i class="fa fa-check"></i>
+                                        </span>
+                                    </div>
+                                    <p class="help is-success">This username is available</p>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Password</label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input class="input is-danger" type="password" placeholder="Password" value="">
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-key"></i>
+                                        </span>
+                                        <span class="icon is-small is-right">
+                                            <i class="fa fa-warning"></i>
+                                        </span>
+                                    </div>
+                                    <p class="help is-danger">This email is invalid</p>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Name</label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input class="input" type="text" placeholder="Name" value="">
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-user-o"></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label class="label">Email</label>
+                                    <div class="control has-icons-left has-icons-right">
+                                        <input class="input" type="email" placeholder="Email" value="">
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-envelope  "></i>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="field is-grouped">
+                                    <div class="control">
+                                        <button class="button is-primary">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="column">
+                        </div>
+                    </div>
+                </h2>
+            </div>
+        </section>
+
+    </body>
+</html>
