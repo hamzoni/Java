@@ -18,7 +18,7 @@ public class UserListController extends Authentication {
     @Override
     public void get(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!authorized(request, response, new int[]{RoleConfig.ADMIN})) {
-            response.sendRedirect(PathConfig.ROOT + "post/list");
+            response.sendRedirect(PathConfig.ROOT + "user/list");
             return;
         }
         int page = 1;
@@ -28,7 +28,9 @@ public class UserListController extends Authentication {
         } catch (Exception ex) {}
         
         // Set posts data
-        ArrayList<User> users = DAO.usr.pagination(page, pageSize);
+        String search = request.getParameter("search");
+        String privilege = request.getParameter("privilege");
+        ArrayList<User> users = DAO.usr.pagination(page, pageSize, search, privilege);
         request.setAttribute("users", users);
         // Set paginator urls
         int pageCount = (int) Math.ceil(DAO.usr.count() / (double) pageSize);

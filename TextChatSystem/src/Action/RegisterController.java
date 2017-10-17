@@ -50,8 +50,7 @@ public class RegisterController {
                 user.setLogin(login);
                 user.setPassword(pwd);
 
-                c.getData().addUser(user);
-                c.getData().setaUser(user);
+                c.client.registerAccount(user);
                 errorTxt.setText("");
 
                 // nagivate back to login frame

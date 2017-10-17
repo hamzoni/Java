@@ -6,6 +6,8 @@ import GUI.Chat;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class ChatboxController {
     private Controller c;
@@ -15,14 +17,10 @@ public class ChatboxController {
     }
     
     public class ChatboxMessageListing {
-
-        private Controller c;
         private Chat chat;
-
-        public ChatboxMessageListing(Controller c, Chat chat) {
-            this.c = c;
+        
+        public ChatboxMessageListing(Chat chat) {
             this.chat = chat;
-
             chat.getInput_message().addKeyListener(new ChatboxMessageKey(chat));
 
             // Set title
@@ -31,13 +29,24 @@ public class ChatboxController {
             String title = userA + " (me) chatting with " + userB;
             chat.getSendFrom().setText(userA);
             chat.getSendTo().setText(userB);
-            this.chat.setTitle(title);
-
+            chat.setTitle(title);
+            // Set event listener
+            setEvents();
         }
+        
+        public void setEvents() {
+            chat.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    c.removeChatbox(chat.receiver, false);
+                }
+            });
+        }
+        
         // Use in Controller
         public void updateMessagesList(User userTurn, String newMessage) {
-            this.chat.setVisible(true);
-            this.chat.getTextarea_chatbox().append(userTurn.getFullName() + ": " + newMessage + "\n");
+            chat.setVisible(true);
+            chat.getTextarea_chatbox().append(userTurn.getFullName() + ": " + newMessage + "\n");
         }
 
         public Chat getChat() {
@@ -58,6 +67,9 @@ public class ChatboxController {
             User target = this.chat.receiver;
             User source = c.getData().getaUser();
             String message = this.chat.getInput_message().getText();
+            
+            if (message.length() == 0) return;
+            
             this.chat.getInput_message().setText("");
             // push current chat to UI
             chat.getTextarea_chatbox().append(source.getFullName() +"(me): " + message + "\n");

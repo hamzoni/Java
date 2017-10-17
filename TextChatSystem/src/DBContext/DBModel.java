@@ -5,7 +5,6 @@ import FileIO.FileController;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class DBModel {
 
@@ -34,9 +33,16 @@ public class DBModel {
         users = loadUsers();
         offMsgs = loadMsgs();
     }
+    
+    public void refresh() {
+        users = loadUsers();
+        offMsgs = loadMsgs();
+    }
 
     public boolean checkExistOnline(User user) {
+        if (usersOnline == null || user == null) return false;
         for (User user1 : usersOnline) {
+            if (user1 == null) continue;
             if (user1.getLogin().equals(user.getLogin())) {
                 return true;
             }
@@ -44,23 +50,24 @@ public class DBModel {
         return false;
     }
 
-    public boolean checkExistOnline(String user) {
+    public boolean checkExistOnline(String username) {
         for (User user1 : usersOnline) {
-            if (user1.getLogin().equals(user)) {
+            if (user1.getLogin().equals(username)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean checkLogin(String username, String password) {
+    public User checkLogin(User u) {
+        if (u == null) return null;
         for (User user : users) {
-            if (user.getLogin().equals(username) && user.getPassword().equals(password)) {
-                this.aUser = user;
-                return true;
+            if (user.getLogin().equals(u.getLogin()) && 
+                    user.getPassword().equals(u.getPassword())) {
+                return user;
             }
         }
-        return false;
+        return null;
     }
     
     private ArrayList<OfflineMessage> loadMsgs() {
@@ -175,10 +182,12 @@ public class DBModel {
         return usersOnline;
     }
 
+    // Calling user
     public void setUsersOnline(ArrayList<User> usersOnline, User newUser) {
         this.usersOnline = usersOnline;
         // add new user if there is new
-        if (newUser != null && !duplicateUser(newUser)) {
+        if (newUser != null && !duplicateUser(newUser) && 
+                !newUser.equals(aUser.getLogin())) {
             users.add(newUser);
         }
         // sort by version

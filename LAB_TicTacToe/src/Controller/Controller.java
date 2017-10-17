@@ -12,14 +12,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Controller extends Thread {
+public class Controller {
     
     public String me;
     
     private UserList home;
-    private DialogLogin dlgLg;
+    private JFrameLogin dlgLg;
     
-    private DialogLoginEvents dlgLgCtrl;
+    private JFrameLoginEvents dlgLgCtrl;
     private UserListEvents homeCtrl;
     public HashMap<Integer, DialogInviteEvents> dlgInvCtrls;
     public HashMap<Integer, DialogPlayEvents> dlgPlayCtrls;
@@ -30,29 +30,31 @@ public class Controller extends Thread {
     private static ArrayList<String> usersList;
     
     public static void main(String[] args) {
-        new Controller().start();
+        new Controller();
     }
 
     public Controller() {
-        setDAT();
+        initServer();
+    }
+    
+    private void initServer() {
+        server = new Server(this);
+        new Thread(server).start();
+    }
+    
+    public void initClient() {
         setGUI();
-    }
-    
-    public void run() {
-        dlgLg.setVisible(true);
-    }
-    
-    private void setDAT() {
         usersList = new ArrayList<String>();
+        dlgLg.setVisible(true);
     }
     
     private void setGUI() {
         home = new UserList();
-        dlgLg = new DialogLogin();
+        dlgLg = new JFrameLogin();
         dlgInvCtrls = new HashMap<Integer, DialogInviteEvents>();
         dlgPlayCtrls = new HashMap<Integer, DialogPlayEvents>();
         
-        dlgLgCtrl = new DialogLoginEvents<DialogLogin>(this, dlgLg);
+        dlgLgCtrl = new JFrameLoginEvents<JFrameLogin>(this, dlgLg);
         homeCtrl = new UserListEvents<UserList>(this, home);
     }
     
@@ -108,15 +110,12 @@ public class Controller extends Thread {
     
     public void setNWC(String username) {
         this.me = username;
+        client = new Client(this);
         
-        server = new Server();
-        client = new Client(username);
-        client.setController(this);
-        
-        new Thread(server).start();
         new Thread(client).start();
         
-        dlgLg.setVisible(false);
+        dlgLg.dispose();
+        home.setTitle(me);
         home.setVisible(true);
     }
     
@@ -184,5 +183,23 @@ public class Controller extends Thread {
         int randInt = (int) new Date().getTime();
         randInt = (int) (randInt * Math.random() + randInt % 13);
         return Math.abs(randInt);
+    }
+
+    public void collapseAll() {
+        Iterator it = dlgInvCtrls.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            DialogInviteEvents dlg = (DialogInviteEvents) pair.getValue();
+            dlg.closeGUI();
+            it.remove();
+        }
+        
+        it = dlgPlayCtrls.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            DialogPlayEvents dlg = (DialogPlayEvents) pair.getValue();
+            dlg.closeGUI();
+            it.remove();
+        }
     }
 }

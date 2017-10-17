@@ -45,8 +45,13 @@ public abstract class Authentication extends HttpServlet {
     public static void setCookie(HttpServletResponse response, int id) {
         Cookie cookie = new Cookie("userId", id + "");
         cookie.setPath("/");
-        cookie.setMaxAge(180);
+        // Store cookie for 30 days
+        cookie.setMaxAge(calcDays(30));
         response.addCookie(cookie);
+    }
+    
+    public static int calcDays(int d) {
+        return d * 24 * 60 * 60;
     }
 
     public static void removeAuthUser(HttpServletRequest request) {
@@ -73,6 +78,21 @@ public abstract class Authentication extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (authenticating(request, response)) {
+            // Menu for Admin pages
+            String[] menuLabels = new String[] {
+                "Category", "Post", "User", "Account"
+            };
+            
+            String[] menuUrls = new String[] {
+                "category/list",
+                "post/list",
+                "user/list",
+                "account/list"
+            };
+            
+            request.setAttribute("menuLabels", menuLabels);
+            request.setAttribute("menuUrls", menuUrls);
+            
             get(request, response);
             return;
         }

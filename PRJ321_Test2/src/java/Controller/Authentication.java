@@ -1,6 +1,8 @@
 
 package Controller;
 
+import Config.FeaturesConfig;
+import Config.PathConfig;
 import Entities.Account;
 import java.io.IOException;
 import javax.servlet.ServletException;
@@ -15,8 +17,8 @@ public abstract class Authentication extends HttpServlet {
 
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-//        return account != null;
-        return true;
+        return account != null;
+        
     }
 
     @Override
@@ -26,7 +28,7 @@ public abstract class Authentication extends HttpServlet {
             get(request, response);
             return;
         }
-        response.sendRedirect("../auth/login");
+        response.sendRedirect(PathConfig.root + "auth/login");
     }
     
     @Override
@@ -36,7 +38,16 @@ public abstract class Authentication extends HttpServlet {
             post(request, response);
             return;
         }
-        response.sendRedirect("../auth/login");
+        response.sendRedirect(PathConfig.root + "auth/login");
+    }
+    
+    public boolean authorized(HttpServletRequest request, HttpServletResponse response, int featureID) throws IOException {
+        Account acc = (Account) request.getSession().getAttribute("account");
+        if (!acc.hasRole(featureID)) {
+            response.sendRedirect("home");
+            return false;
+        }
+        return true;
     }
 
     public abstract void get(HttpServletRequest request, HttpServletResponse response)
@@ -44,11 +55,4 @@ public abstract class Authentication extends HttpServlet {
 
     public abstract void post(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException;
-
-    
-
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 }

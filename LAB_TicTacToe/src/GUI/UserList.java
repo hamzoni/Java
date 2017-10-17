@@ -85,4 +85,7 @@ public class UserList extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> list_users;
     // End of variables declaration//GEN-END:variables
+
+    public void updateTitle() {
+    }
 }

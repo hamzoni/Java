@@ -10,24 +10,45 @@
         <%@ include file="Partials/Header.jsp" %>
 
         <div class="columns">
-            <div class="column is-one-quarter">
-                <%@ include file="Partials/Sidebar.jsp" %>
-            </div>
+            <%@ include file="Partials/Sidebar.jsp" %>
             <div class="column">
 
                 <section class="section">
                     <div class="container" id="app">
-
+                        <h3 class="title is-3">Post Manager</h3>
                         <div class="tile is-ancestor">
-
                             <div class="tile is-parent">
                                 <div class="tile is-child box">
                                     <!-- content start here -->
                                     <div class="box">
-                                        <article class="media">
-                                            <a class="button is-primary" href="${path}post/create">Create</a>
-                                        </article>
+                                        <!-- start of navigator -->
+                                        <nav class="level">
+                                            <!-- Left side -->
+                                            <div class="level-left">
+                                                <div class="level-item">
+                                                    <a class="button is-primary" href="${path}post/create">Create</a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Right side -->
+                                            <div class="level-right">
+                                                <form method="get" action="${path}post/list">
+                                                    <div class="field has-addons">
+                                                        <p class="control">
+                                                            <input class="input" type="text" name="search" placeholder="Find a post" value="${param["search"]}">
+                                                        </p>
+                                                        <p class="control">
+                                                            <button class="button">
+                                                                Search
+                                                            </button>
+                                                        </p>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </nav>
+                                        <!-- end of navigator -->   
                                     </div>
+
                                     <table class="table is-bordered is-fullwidth">
                                         <thead>
                                             <tr>
@@ -109,32 +130,46 @@
                 },
                 computed: {
                     showPreviewer: function () {
-                        return { 'is-active' : this.isActive }
+                        return {'is-active': this.isActive}
                     }
                 },
                 methods: {
                     hidePreviewer: function () {
                         this.isActive = false;
                     }
-                    
+
                 }
             });
             var app = new Vue({
                 el: "#app",
-
+                data: {
+                    posts: [],
+                },
+                mounted: function () {
+                    axios.post('list', {
+                        type: "all"
+                    })
+                            .then(response => {
+//                        response = JSON.parse(response.data);
+//                        response.thumbnail = "${path}" + response.thumbnail;
+                                console.log(response);
+                            })
+                            .catch(error => console.log(error));
+                },
                 methods: {
                     showDetail: (id) => {
                         previewer.$data.id = id;
                         axios.post('list', {
+                            type: "detail",
                             id: id
                         })
-                        .then(response => {
-                            response = JSON.parse(response.data);
-                            response.thumbnail = "${path}" + response.thumbnail;
-                            previewer.$data.post = response;
-                            document.querySelector("#previewContent").innerHTML = response.content;
-                        })
-                        .catch(error => console.log(error));
+                                .then(response => {
+                                    response = JSON.parse(response.data);
+                                    response.thumbnail = "${path}" + response.thumbnail;
+                                    previewer.$data.post = response;
+                                    document.querySelector("#previewContent").innerHTML = response.content;
+                                })
+                                .catch(error => console.log(error));
                         previewer.$data.isActive = true;
                     }
                 }

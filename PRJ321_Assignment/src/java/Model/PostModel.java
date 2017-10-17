@@ -1,4 +1,3 @@
-
 package Model;
 
 import Entities.Category;
@@ -17,36 +16,91 @@ public class PostModel extends Model<Post> {
     public PostModel(String tableName) {
         super(tableName);
     }
-    
-    public ArrayList<Post> pagination(int page, int size) {
+
+    public ArrayList<Post> pagination(int page, int size, String search) {
         ArrayList<Post> posts = new ArrayList<Post>();
         if (page <= 0) return null;
         try {
-            String query = "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY id DESC) as r, * FROM " + tableName + ") A WHERE r BETWEEN ? AND ?";
-            PreparedStatement pstm =  con.prepareStatement(query);
+            String query = "SELECT * FROM\n" +
+            "	(SELECT ROW_NUMBER() OVER (ORDER BY id DESC) AS r, * FROM \n" +
+            "	((SELECT *  FROM posts\n" +
+            "	LEFT JOIN (SELECT id AS a_id, name AS author_name FROM users) A\n" +
+            "	ON posts.user_id = A.a_id) B \n" +
+            "	LEFT JOIN (SELECT id AS c_id, name AS category_name FROM categories) C\n" +
+            "	ON B.category_id = C.c_id)";
+            
+            if (search != null) {
+                try {
+                    int searchID = Integer.parseInt(search);
+                    query += " WHERE user_id = " + searchID;
+                    query += " OR category_id = " + searchID;
+                    query += " OR id = " + searchID;
+                } catch (Exception e) {
+                    query += " WHERE author_name LIKE '%" + search + "%'";
+                    query += " OR category_name LIKE '%" + search + "%'";
+                    query += " OR title LIKE '%" + search + "%'";
+                }
+            }
+            query += ") AS D WHERE D.r BETWEEN ? AND ?";
+            
+            PreparedStatement pstm = con.prepareStatement(query);
+
             pstm.setInt(1, (page - 1) * size + 1);
             pstm.setInt(2, page * size);
+            
             ResultSet rs = pstm.executeQuery();
             while (rs.next()) {
                 Post post = new Post();
                 post.setId(rs.getInt("id"));
-                
+
                 User author = DAO.usr.search(rs.getInt("user_id"));
                 Category category = DAO.ctg.search(rs.getInt("category_id"));
-                
+
                 post.setAuthor(author);
                 post.setCategory(category);
                 post.setTitle(rs.getString("title"));
                 post.setContent(rs.getString("content"));
                 post.setThumbnail(rs.getString("thumbnail"));
                 post.setDescription(rs.getString("description"));
-                
+
                 posts.add(post);
             }
         } catch (SQLException ex) {
             Logger.getLogger(PostModel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return posts;
+    }
+    
+    public int countSearch(String search) {
+        int c = 0;
+        try {
+            String query = "SELECT COUNT(*) FROM\n" +
+            "	(SELECT * FROM\n" +
+            "	(SELECT * FROM posts\n" +
+            "	LEFT JOIN (SELECT id AS a_id, name AS author_name FROM users) A\n" +
+            "	ON posts.user_id = A.a_id) B\n" +
+            "	LEFT JOIN (SELECT id AS c_id, name AS category_name FROM categories) C\n" +
+            "	ON B.category_id = C.c_id) AS D";
+            if (search != null) {
+                 try {
+                    if (search.matches("\\D")) throw new Exception();
+                    int searchID = Integer.parseInt(search);
+                    query += " WHERE D.user_id = " + searchID ;
+                    query += " OR D.category_id = " + searchID;
+                    query += " OR D.id = " + searchID;
+                } catch (Exception e) {
+                    query += " WHERE D.author_name LIKE '%" + search + "%'";
+                    query += " OR D.category_name LIKE '%" + search + "%'";
+                    query += " OR D.title LIKE '%" + search + "%'";
+                }
+            }
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) c = rs.getInt(1);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return c;
     }
     
     @Override
@@ -61,7 +115,7 @@ public class PostModel extends Model<Post> {
             pstm.setString(4, t.getContent());
             pstm.setString(5, t.getThumbnail());
             pstm.setString(6, t.getDescription());
-            
+
             return pstm.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(PostModel.class.getName()).log(Level.SEVERE, null, ex);
@@ -75,22 +129,22 @@ public class PostModel extends Model<Post> {
         try {
             String query = "SELECT * FROM " + tableName;
             PreparedStatement pstm = con.prepareStatement(query);
-            
+
             ResultSet rs = pstm.executeQuery();
             while (rs.next()) {
                 Post post = new Post();
                 post.setId(rs.getInt("id"));
-                
+
                 Category category = DAO.ctg.search(rs.getInt("category_id"));
                 User author = DAO.usr.search(rs.getInt("user_id"));
-                
+
                 post.setAuthor(author);
                 post.setCategory(category);
                 post.setTitle(rs.getString("title"));
                 post.setContent(rs.getString("content"));
                 post.setThumbnail(rs.getString("thumbnail"));
                 post.setDescription(rs.getString("description"));
-               
+
                 posts.add(post);
             }
             return posts;
@@ -99,14 +153,16 @@ public class PostModel extends Model<Post> {
         }
         return posts;
     }
-    
+
     public ArrayList<Post> listInCategory(int page, int size, int category_id) {
         ArrayList<Post> posts = new ArrayList<Post>();
-        if (page <= 0) return null;
+        if (page <= 0) {
+            return null;
+        }
         try {
-            String query = "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY id DESC) as r, * FROM " + tableName + 
-                    " WHERE category_id = ?) A WHERE r BETWEEN ? AND ?";
-            PreparedStatement pstm =  con.prepareStatement(query);
+            String query = "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY id DESC) as r, * FROM " + tableName
+                    + " WHERE category_id = ?) A WHERE r BETWEEN ? AND ?";
+            PreparedStatement pstm = con.prepareStatement(query);
             pstm.setInt(1, category_id);
             pstm.setInt(2, (page - 1) * size + 1);
             pstm.setInt(3, page * size);
@@ -114,17 +170,17 @@ public class PostModel extends Model<Post> {
             while (rs.next()) {
                 Post post = new Post();
                 post.setId(rs.getInt("id"));
-                
+
                 User author = DAO.usr.search(rs.getInt("user_id"));
                 Category category = DAO.ctg.search(rs.getInt("category_id"));
-                
+
                 post.setAuthor(author);
                 post.setCategory(category);
                 post.setTitle(rs.getString("title"));
                 post.setContent(rs.getString("content"));
                 post.setThumbnail(rs.getString("thumbnail"));
                 post.setDescription(rs.getString("description"));
-                
+
                 posts.add(post);
             }
         } catch (SQLException ex) {
@@ -132,27 +188,31 @@ public class PostModel extends Model<Post> {
         }
         return posts;
     }
-    
+
     public int countPostsInCategory(int categoryID) {
         int c = 0;
         try {
             String query = "SELECT COUNT(*) FROM " + tableName + " WHERE category_id = " + categoryID;
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) c = rs.getInt(1);
+            while (rs.next()) {
+                c = rs.getInt(1);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
         return c;
     }
-    
+
     public ArrayList<Post> listInAuthor(int page, int size, int author_id) {
         ArrayList<Post> posts = new ArrayList<Post>();
-        if (page <= 0) return null;
+        if (page <= 0) {
+            return null;
+        }
         try {
-            String query = "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY id DESC) as r, * FROM " + tableName + 
-                    " WHERE user_id = ?) A WHERE r BETWEEN ? AND ?";
-            PreparedStatement pstm =  con.prepareStatement(query);
+            String query = "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY id DESC) as r, * FROM " + tableName
+                    + " WHERE user_id = ?) A WHERE r BETWEEN ? AND ?";
+            PreparedStatement pstm = con.prepareStatement(query);
             pstm.setInt(1, author_id);
             pstm.setInt(2, (page - 1) * size + 1);
             pstm.setInt(3, page * size);
@@ -160,17 +220,17 @@ public class PostModel extends Model<Post> {
             while (rs.next()) {
                 Post post = new Post();
                 post.setId(rs.getInt("id"));
-                
+
                 User author = DAO.usr.search(rs.getInt("user_id"));
                 Category category = DAO.ctg.search(rs.getInt("category_id"));
-                
+
                 post.setAuthor(author);
                 post.setCategory(category);
                 post.setTitle(rs.getString("title"));
                 post.setContent(rs.getString("content"));
                 post.setThumbnail(rs.getString("thumbnail"));
                 post.setDescription(rs.getString("description"));
-                
+
                 posts.add(post);
             }
         } catch (SQLException ex) {
@@ -178,14 +238,16 @@ public class PostModel extends Model<Post> {
         }
         return posts;
     }
-    
+
     public int countPostsByAuthor(int authorID) {
         int c = 0;
         try {
             String query = "SELECT COUNT(*) FROM " + tableName + " WHERE category_id = " + authorID;
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) c = rs.getInt(1);
+            while (rs.next()) {
+                c = rs.getInt(1);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -199,15 +261,15 @@ public class PostModel extends Model<Post> {
             String query = "SELECT * FROM " + tableName + " WHERE id = ?";
             PreparedStatement pstm = con.prepareStatement(query);
             pstm.setInt(1, i);
-            
+
             ResultSet rs = pstm.executeQuery();
             while (rs.next()) {
                 post = new Post();
                 post.setId(rs.getInt("id"));
-                
+
                 Category category = DAO.ctg.search(rs.getInt("category_id"));
                 User author = DAO.usr.search(rs.getInt("user_id"));
-                
+
                 post.setAuthor(author);
                 post.setCategory(category);
                 post.setTitle(rs.getString("title"));
@@ -221,7 +283,7 @@ public class PostModel extends Model<Post> {
         }
         return post;
     }
-    
+
     public Post searchByAuthor(int id, int authorID) {
         Post post = null;
         try {
@@ -229,15 +291,15 @@ public class PostModel extends Model<Post> {
             PreparedStatement pstm = con.prepareStatement(query);
             pstm.setInt(1, id);
             pstm.setInt(2, authorID);
-            
+
             ResultSet rs = pstm.executeQuery();
             while (rs.next()) {
                 post = new Post();
                 post.setId(rs.getInt("id"));
-                
+
                 Category category = DAO.ctg.search(rs.getInt("category_id"));
                 User author = DAO.usr.search(rs.getInt("user_id"));
-                
+
                 post.setAuthor(author);
                 post.setCategory(category);
                 post.setTitle(rs.getString("title"));
@@ -251,7 +313,7 @@ public class PostModel extends Model<Post> {
         }
         return post;
     }
-    
+
     @Override
     public boolean update(Post t) {
         try {
@@ -264,14 +326,14 @@ public class PostModel extends Model<Post> {
             pstm.setString(5, t.getThumbnail());
             pstm.setString(6, t.getDescription());
             pstm.setInt(7, t.getId());
-            
+
             return pstm.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(PostModel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
-    
+
     public boolean updateByAuthor(Post t, int authorID) {
         try {
             String query = "UPDATE " + tableName + " SET [category_id] = ?, [title] = ?, [content] = ?, [thumbnail] = ?, [description] = ? "
@@ -284,7 +346,7 @@ public class PostModel extends Model<Post> {
             pstm.setString(5, t.getDescription());
             pstm.setInt(6, t.getId());
             pstm.setInt(7, authorID);
-            
+
             return pstm.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(PostModel.class.getName()).log(Level.SEVERE, null, ex);
@@ -298,7 +360,7 @@ public class PostModel extends Model<Post> {
             String query = "DELETE FROM " + tableName + " WHERE id = ?";
             PreparedStatement pstm = con.prepareStatement(query);
             pstm.setInt(1, t);
-            
+
             return pstm.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(PostModel.class.getName()).log(Level.SEVERE, null, ex);
@@ -312,12 +374,12 @@ public class PostModel extends Model<Post> {
             PreparedStatement pstm = con.prepareStatement(query);
             pstm.setInt(1, id);
             pstm.setInt(2, authorId);
-            
+
             return pstm.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(PostModel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
-    
+
 }

@@ -38,7 +38,7 @@ public class ServerListOut implements Runnable {
                 }
             }
         } catch (IOException ex) {
-            System.out.println(ex);
+            //
         }
         socket = null;
     }

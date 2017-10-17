@@ -10,13 +10,18 @@
     <body>
         <%@ include file="Partials/Header.jsp" %>
         <div class="columns">
-            <div class="column is-one-quarter">
                 <%@ include file="Partials/Sidebar.jsp" %>
-            </div>
             <div class="column">
 
                 <section class="section">
                     <div class="container">
+
+                        <nav class="breadcrumb" aria-label="breadcrumbs">
+                            <ul>
+                                <li><a href="${path}user/list">User Manager</a></li>
+                                <li class="is-active"><a href="${path}user/create" aria-current="page">User Category</a></li>
+                            </ul>
+                        </nav>
 
                         <div class="tile is-ancestor">
 
@@ -63,14 +68,14 @@
                                                 </span>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="field">
                                             <label class="label">Roles</label>
                                             <div class="select">
                                                 <select name="role">
-                                                    <option value="<%= roles.roles[0] %>">Admin</option>
-                                                    <option value="<%= roles.roles[1] %>">Mod</option>
-                                                    <option value="<%= roles.roles[2] %>">Author</option>
+                                                    <option value="<%= roles.roles[0]%>">Admin</option>
+                                                    <option value="<%= roles.roles[1]%>">Mod</option>
+                                                    <option value="<%= roles.roles[2]%>">Author</option>
                                                 </select>
                                             </div>
                                         </div>

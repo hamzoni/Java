@@ -6,6 +6,7 @@ import Networking.Server.ClientHandler;
 import java.net.Socket;
 
 public class Member {
+    private int sid;
     private User user;
     private Socket socket;
     private ClientHandler handler;
@@ -33,5 +34,12 @@ public class Member {
     public void setHandler(ClientHandler handler) {
         this.handler = handler;
     }
-    
+
+    public int getSid() {
+        return sid;
+    }
+
+    public void setSid(int sid) {
+        this.sid = sid;
+    }
 }

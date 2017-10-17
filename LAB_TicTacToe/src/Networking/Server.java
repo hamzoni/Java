@@ -1,6 +1,7 @@
 
 package Networking;
 
+import Controller.Controller;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -16,7 +17,7 @@ public class Server implements Runnable {
     private boolean alive;
     private ArrayList<User> usersList;
     
-    public Server() {
+    public Server(Controller c) {
         usersList = new ArrayList<User>();
         
         try {
@@ -26,7 +27,7 @@ public class Server implements Runnable {
             System.out.println("Server opened at " + sk.getInetAddress().getHostName() + ":" + Config.PORT);
         } catch (IOException ex) {
             alive = false;
-            System.out.println("Server already created.");
+            c.initClient();
         }
     }
     

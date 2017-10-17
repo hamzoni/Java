@@ -4,7 +4,9 @@ package BinaryTree;
 import java.util.Stack;
 
 public class Tree {
+    
     protected Node root;
+    
     public Tree() {
         root = null;
     }
@@ -139,6 +141,8 @@ public class Tree {
     }
     public void insert(int el) {
         Node p = root, prev = null;
+        
+        // Find a place for inserting new node
         while (p != null) {
             prev = p;
             if (p.key < el) {
@@ -146,13 +150,15 @@ public class Tree {
             } else {
                 p = p.left;
             }
-            if (root == null) {
-                root = new Node(el);
-            } else if (prev.key < el) {
-                prev.right = new Node(el);
-            } else {
-                prev.left = new Node(el);
-            }
+            
+        }
+        
+        if (root == null) {
+            root = new Node(el);
+        } else if (prev.key < el) {
+            prev.right = new Node(el);
+        } else {
+            prev.left = new Node(el);
         }
     }
     

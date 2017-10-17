@@ -22,9 +22,11 @@ public class OffMsgController {
     public OffMsgController(ChatOffline vOffMsg, Controller c) {
         this.vOffMsg = vOffMsg;
         this.c = c;
+        
         vOffMsg.getButton_read().addActionListener(new OffMsgButtonRead());
         vOffMsg.getButton_close().addActionListener(new OffMsgButtonClose());
         vOffMsg.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        vOffMsg.getLabel_loginName().setText(c.getData().getaUser().getLogin());
         
         vOffMsg.addWindowListener(new WindowAdapter() {
             @Override

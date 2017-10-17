@@ -37,6 +37,7 @@ public class Controller {
     private RegisterController regCtrl;
 
     private DBModel data;
+    public boolean serverAlive;
 
     public static void main(String[] args) {
         new Controller().init();
@@ -48,7 +49,10 @@ public class Controller {
 
         setupComponents();
         setupNetworks();
-
+        initServer();
+    }
+    
+    public void showLogin() {
         vLogin.setVisible(true);
     }
     
@@ -61,28 +65,20 @@ public class Controller {
         new Thread(upd_out).start();
     }
     
-    public void createClient(String address, int port) {
-        String serverAddress = null;
-        int serverPort = -1;
-        if (address == null) {
-            serverAddress = server.getServer().getInetAddress().getHostAddress();
-            serverPort = server.getServer().getLocalPort();
-        } else {
-            serverAddress = address;
-            serverPort = port;
-        }
+    public void createClient(String address) {
         
-        client.setHost(serverAddress);
-        client.setPort(serverPort);
-        client.setUser(data.getaUser());
-        client.setController(this);
+        // Host client connect to its server itself
+        if (address == null) {
+            address = server.getServer().getInetAddress().getHostAddress();
+        }
+        showLogin();
         new Thread(client).start();
     }
 
     public void setupNetworks() {
         upd_in = new ServerListIn(this);
         upd_out = new ServerListOut();
-        client = new Client();
+        client = new Client(this);
         server = new Server(this);
     }
 
@@ -139,14 +135,46 @@ public class Controller {
             }
             
             chat.getButton_sendMessage().addActionListener(chatboxCtrl.new ChatboxButtonSend(chat));
-            listMessageData.add(chatboxCtrl.new ChatboxMessageListing(this, chat));
+            listMessageData.add(chatboxCtrl.new ChatboxMessageListing(chat));
             vChat.add(chat);
         }
         
     }
     
-
-    public Login getvLogin() {
+     public void removeChatbox(User receiver, boolean isReceiver) {
+        for (ChatboxMessageListing cbml : listMessageData) {
+            if (cbml.getChat().receiver.getLogin().equals(receiver.getLogin())) {
+                cbml.getChat().dispose();
+                for (Chat chat : vChat) {
+                    if (cbml.getChat() == chat) {
+                        vChat.remove(chat);
+                        break;
+                    }
+                }
+                listMessageData.remove(cbml);
+                break;
+            }
+        }
+        if (!isReceiver && data.checkExistOnline(receiver)) {
+            client.cancelChat(receiver);
+        }
+    }
+     
+    public void emptyChatboxes() {
+        for (User user : data.getUsers()) {
+            removeChatbox(user, true);
+        }
+    }
+     
+    public void login(boolean isSuccess) {
+        if (isSuccess) {
+            loginCtrl.loginSuccess();
+        } else {
+            loginCtrl.loginFail();
+        }
+    }
+        
+     public Login getvLogin() {
         return vLogin;
     }
 
@@ -171,21 +199,17 @@ public class Controller {
     }
     
     public void closeClient() {
-        if (client.getSocket() == null) return;
+        if (client.getSocket() == null || !serverAlive) return;
         client.close();
     }
-   
+    
     public void closeServer() {
         if (server.getServer() == null) return;
         server.close();
     }
-
+    
     public UserListController getUserListCtrl() {
         return userListCtrl;
-    }
-
-    public void setUserListCtrl(UserListController userListCtrl) {
-        this.userListCtrl = userListCtrl;
     }
 
     public ChatboxController getChatboxCtrl() {
@@ -200,8 +224,4 @@ public class Controller {
         return offMsgCtrl;
     }
 
-
-    public ArrayList<Chat> getvChat() {
-        return vChat;
-    }
 }

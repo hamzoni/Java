@@ -12,16 +12,21 @@
     <body>
         <%@ include file="Partials/Header.jsp" %>
         <div class="columns">
-            <div class="column is-one-quarter">
                 <%@ include file="Partials/Sidebar.jsp" %>
-            </div>
             <div class="column">
 
                 <section class="section">
                     <div class="container">
-
+                        
+                        <nav class="breadcrumb" aria-label="breadcrumbs">
+                            <ul>
+                                <li><a href="${path}post/list">Post Manager</a></li>
+                                <li class="is-active"><a href="${path}post/create" aria-current="page">Post Category</a></li>
+                            </ul>
+                        </nav>
+                        
                         <div class="tile is-ancestor">
-
+                            
                             <div class="tile is-parent">
                                 <div class="tile is-child box">
                                     <!-- content start here -->

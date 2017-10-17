@@ -2,26 +2,26 @@
 package Action;
 
 import Controller.Controller;
-import GUI.DialogLogin;
+import GUI.JFrameLogin;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class DialogLoginEvents <T> extends Event {
+public class JFrameLoginEvents <T> extends Event {
     
-    private DialogLogin dialog;
+    private JFrameLogin frame;
     
-    public DialogLoginEvents(Controller c, T dialog) {
+    public JFrameLoginEvents(Controller c, T frame) {
         super(c);
-        this.dialog = (DialogLogin) dialog;
+        this.frame = (JFrameLogin) frame;
         setEventListeners();
     }
 
     @Override
     protected void setEventListeners() {
-        dialog.getButton_login().addActionListener(new ActionListener() {
+        frame.getButton_login().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = dialog.getInput_username().getText();
+                String username = frame.getInput_username().getText();
                 c.setNWC(username);
             }
         });

@@ -37,7 +37,8 @@ public class UserUpdateController extends Authentication {
         RoleConfig rcfg = new RoleConfig();
         int role = rcfg.findRole(Integer.parseInt(request.getParameter("role")));
         if (role != -1) {
-            user.setPrivilege(role);
+            if (user.getId() != Authentication.getAuthUser(request).getId()) 
+                user.setPrivilege(role);            
         } else {
             // Invalid role. Redirect to previous page
             response.sendRedirect(PathConfig.ROOT + "user/update");

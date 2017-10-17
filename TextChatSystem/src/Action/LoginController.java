@@ -1,6 +1,7 @@
 package Action;
 
 import Controller.Controller;
+import Entities.User;
 import GUI.Login;
 import java.awt.event.ActionEvent;
 
@@ -22,18 +23,25 @@ public class LoginController {
         public void actionPerformed(ActionEvent e) {
             String login = c.getvLogin().getInput_login().getText();
             String pwd = c.getvLogin().getInput_password().getText();
-
-            if (!c.getData().checkLogin(login, pwd)) {
-                c.getvLogin().getLabel_announce().setText("Username or password wrong");
-            } else {
-                c.getvLogin().setVisible(false);
-                c.getvListUser().getLabel_fullName().setText(c.getData().getaUser().getFullName());
-                c.getvListUser().setVisible(true);
-                // Attempt to create server
-                c.initServer();
-            }
+            
+            User user = new User();
+            user.setLogin(login);
+            user.setPassword(pwd);
+            
+            c.client.login(user);
         }
 
+    }
+    
+    public void loginSuccess() {
+        c.getvLogin().setVisible(false);
+        c.getvListUser().getLabel_fullName().setText(c.getData().getaUser().getFullName());
+        c.getvOffMsg().getLabel_loginName().setText(c.getData().getaUser().getFullName());
+        c.getvListUser().setVisible(true);
+    }
+    
+    public void loginFail() {
+        vLogin.getLabel_announce().setText("Username or password wrong");
     }
     
     class LoginButtonRegister extends Action {

@@ -7,14 +7,19 @@
         <%@ include file="Partials/Header.jsp" %>
 
         <div class="columns">
-            <div class="column is-one-quarter">
                 <%@ include file="Partials/Sidebar.jsp" %>
-            </div>
             <div class="column">
 
                 <section class="section">
                     <div class="container">
 
+                        <nav class="breadcrumb" aria-label="breadcrumbs">
+                            <ul>
+                                <li><a href="${path}category/list">Category Manager</a></li>
+                                <li class="is-active"><a href="${path}category/update" aria-current="page">Update Category</a></li>
+                            </ul>
+                        </nav>
+                        
                         <div class="tile is-ancestor">
 
                             <div class="tile is-parent">

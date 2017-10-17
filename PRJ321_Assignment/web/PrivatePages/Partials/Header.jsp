@@ -6,17 +6,12 @@
                 <!-- Left side -->
                 <div class="level-left">
                     <div class="level-item">
-                        <p class="subtitle is-5">
-                            <strong>PRJ321 Assignment</strong>
-                        </p>
-                        <div class="tabs">
-                            <ul>
-                                <li class="is-active"><a>Pictures</a></li>
-                                <li><a>Music</a></li>
-                                <li><a>Videos</a></li>
-                                <li><a>Documents</a></li>
-                            </ul>
-                        </div>
+                        <a href="${path}home">
+                            <p class="subtitle is-5">
+                                <strong>QUYTA</strong>
+                                PRJ321 Assignment
+                            </p>
+                        </a>
                     </div>
                 </div>
 

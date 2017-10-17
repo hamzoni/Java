@@ -18,17 +18,15 @@ import java.util.logging.Logger;
 
 public class ServerListIn implements Runnable {
     // INITIATE THIS PACKAGE WHEN SEARCHING FOR SERVERS
-    public ArrayList<String> serverLists;
-    private Controller c;
+    private Controller ctrl;
 
     public ServerListIn(Controller c) {
-        this.c = c;
+        this.ctrl = c;
     }
     
     @Override
     public void run() {
         DatagramSocket c = null;
-        serverLists = new ArrayList<String>();
         try {
             c  = new DatagramSocket();
             c.setBroadcast(true);
@@ -61,9 +59,9 @@ public class ServerListIn implements Runnable {
                 int serverPort = receivePacket.getPort();
                 
                 // Connect to first found server
-                this.c.createClient(serverAddress, serverPort);
-                serverLists.add(serverAddress);
-                System.out.println("Found a server: " + serverAddress + ":" + serverPort);
+                if (ctrl.server.getServer() == null)
+                    ctrl.createClient(serverAddress);
+                System.out.println("Server found: " + serverAddress + ":" + serverPort);
                 
                 return;
             }

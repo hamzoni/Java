@@ -64,7 +64,6 @@ public class GameData implements Serializable {
             }
             
             turn = turn == TURNX ? TURNO : TURNX;
-            System.out.println("Current turn should be: " + turn);
             return true;
         }
         return false;

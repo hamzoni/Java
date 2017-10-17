@@ -8,8 +8,17 @@ public class RoleConfig {
     public static final int MOD = 1;
     // Only CRUD for Owner's posts
     public static final int AUTHOR = 2;
-
-    public int[] roles = {ADMIN, MOD, AUTHOR};
+    
+    public static final int[] roles = {ADMIN, MOD, AUTHOR};
+    
+    public static final boolean isRoleAvailable(int role) {
+        for (int i = 0; i < roles.length; i++) {
+            if (roles[i] == role) return true;
+        }
+        return false;
+    }
+    
+    
     
     public int findRole(int role) {
         for (int i = 0; i < roles.length; i++) {

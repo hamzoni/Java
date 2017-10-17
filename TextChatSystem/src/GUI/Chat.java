@@ -108,8 +108,6 @@ public class Chat extends JDialog {
     public JTextArea getTextarea_chatbox() {
         return textarea_chatbox;
     }
-    
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton button_sendMessage;

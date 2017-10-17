@@ -28,7 +28,7 @@ public class HomeController extends HttpServlet {
         request.setAttribute("categories", categories);
         
         // Set posts data
-        ArrayList<Post> posts = DAO.pst.pagination(page, pageSize);
+        ArrayList<Post> posts = DAO.pst.pagination(page, pageSize, null);
         for (Post post : posts) {
             if (post.getContent().length() > 100) {
                 post.setContent(post.getContent().substring(0, 150) + "...");

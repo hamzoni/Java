@@ -14,16 +14,20 @@
     <%@ include file="/Components/Header.jsp" %>
     <body>
         <%@ include file="Partials/Header.jsp" %>
-
         <div class="columns">
-            <div class="column is-one-quarter">
                 <%@ include file="Partials/Sidebar.jsp" %>
-            </div>
             <div class="column">
 
                 <section class="section">
                     <div class="container">
-
+                        
+                        <nav class="breadcrumb" aria-label="breadcrumbs">
+                            <ul>
+                                <li><a href="${path}user/list">User Manager</a></li>
+                                <li class="is-active"><a href="${path}user/update" aria-current="page">User Update</a></li>
+                            </ul>
+                        </nav>
+                        
                         <div class="tile is-ancestor">
 
                             <div class="tile is-parent">
@@ -74,7 +78,11 @@
                                         <div class="field">
                                             <label class="label">Roles</label>
                                             <div class="select">
-                                                <select name="role">
+                                                <select name="role" 
+                                                        <c:if test="${user.getPrivilege() == sessionScope.user.getPrivilege()}">
+                                                            disabled
+                                                        </c:if>
+                                                    >
                                                     <option value="<%= roles.roles[0] %>" 
                                                         <% if (user.getPrivilege() == roles.roles[0]) { %>
                                                             selected

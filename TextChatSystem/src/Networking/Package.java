@@ -7,14 +7,16 @@ import java.util.ArrayList;
 
 public class Package implements Serializable {
     public ArrayList<User> usersList;
+    public int senderID;
+    public int receiverID;
     public User target;
     public User source;
     public int command;
     public Object data;
     
-    // RETRIEVE PLAYER LIST TO NEW CONNECTED PLAYER
-    public static final int REGISTER_TO_SERVER = 0;
-
+    // CONNECT TO SERVER WHENEVER INITIATE PROGRAM
+    public static final int CONNECT_SERVER = 0;
+    
     // NOTIFY THE TARGET USER TO OPEN DIALOG AND START CHATTING
     public static final int REQUEST_CHAT = 1;
     
@@ -24,12 +26,18 @@ public class Package implements Serializable {
     // SEND MESSAGE TO TARGET USER
     public static final int SEND_MESSAGE = 3;
     
-    // RECEIVE MESSAGE FROM SERVER
-    public static final int RECEIVE_MESSAGE = 4;
-    
     // ANNOUNCE SERVER CLOSING
     public static final int SERVER_CLOSING = 5;
     
     // ANNOUNCE CLIENT CLOSING
     public static final int CLIENT_CLOSING = 6;
+    
+    // CLOSE CHATBOX
+    public static final int CANCEL_CHAT = 7;
+    
+    // REGISTER NEW ACCOUNT
+    public static final int CREATE_ACCOUNT = 8;
+    
+    // REGISTER NEW ACCOUNT
+    public static final int LOGIN_ACCOUNT = 9;
 }

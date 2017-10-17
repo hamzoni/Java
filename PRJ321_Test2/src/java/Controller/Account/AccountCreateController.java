@@ -1,6 +1,7 @@
 
 package Controller.Account;
 
+import Config.FeaturesConfig;
 import Controller.Authentication;
 import Entities.Account;
 import Entities.Feature;
@@ -17,6 +18,9 @@ public class AccountCreateController extends Authentication {
     @Override
     public void get(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        
+        if (!authorized(request, response, FeaturesConfig.Account.WRITE)) return;
+        
         request.setAttribute("title", "Account Create");
         request.setAttribute("navbar", "account.list");
         request.getRequestDispatcher("/WEB-INF/Account/Create.jsp").forward(request, response);
@@ -25,6 +29,9 @@ public class AccountCreateController extends Authentication {
     @Override
     public void post(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
+        
+        if (!authorized(request, response, FeaturesConfig.Account.WRITE)) return;
+        
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String features[] = request.getParameterValues("features");
@@ -34,7 +41,6 @@ public class AccountCreateController extends Authentication {
             response.sendRedirect("create");
             return;
         }
-        
         
         // Create account
         Account account = new Account();

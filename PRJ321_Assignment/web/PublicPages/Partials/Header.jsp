@@ -4,8 +4,8 @@
         <nav class="navbar">
             <div class="container">
                 <div class="navbar-brand">
-                    <a class="navbar-item">
-                        <img src="http://bulma.io/images/bulma-type-white.png" alt="Logo">
+                    <a class="navbar-item" href="${path}home">
+                        <img src="${path}Assets/images/logo.png" alt="Logo">
                     </a>
                     <span class="navbar-burger burger" data-target="navbarMenuHeroB">
                         <span></span>
@@ -32,10 +32,10 @@
     <div class="hero-body">
         <div class="container has-text-centered">
             <p class="title">
-                Title
+                <img src="${path}Assets/images/logo.png" alt="Logo">
             </p>
             <p class="subtitle">
-                Subtitle
+                PRJ321 ASSIGNMENT: MULTIUSERS BLOG
             </p>
         </div>
     </div>

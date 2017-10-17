@@ -25,6 +25,10 @@ public class AccountModel extends Model<Account> {
                 account = new Account();
                 account.setUsername(rs.getString("username"));
                 account.setPassword(rs.getString("password"));
+                
+                ArrayList<Role> roles = ModelGroup.roleMdl.search(account.getUsername());
+                account.setRoles(roles);
+                
                 return account;
             }
         } catch (SQLException ex) {
@@ -42,7 +46,6 @@ public class AccountModel extends Model<Account> {
             
             for (Role role : t.getRoles()) {
                 ModelGroup.roleMdl.create(role);
-                System.out.println("ok");
             }
             
             return stmt.execute();
@@ -80,35 +83,46 @@ public class AccountModel extends Model<Account> {
     public Account search(int id) {
         return null;
     }
-
-    @Override
-    public boolean update(Account t) {
+    
+    public boolean update(Account t, String username) {
         try {
-            PreparedStatement stmt = con.prepareStatement("UPDATE accounts SET username = ? , password = ?");
+            PreparedStatement stmt = con.prepareStatement("UPDATE accounts SET username = ?, password = ? WHERE username = ?");
             stmt.setString(1, t.getUsername());
             stmt.setString(2, t.getPassword());
+            stmt.setString(3, username);
+            
+            ModelGroup.roleMdl.delete(t.getUsername());
+            for (Role role : t.getRoles()) {
+                ModelGroup.roleMdl.create(role);
+            }
+            
             return stmt.executeUpdate() != 0;
         } catch (SQLException ex) {
             Logger.getLogger(AccountModel.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
+    }
+    
+    @Override
+    public boolean update(Account t) {
         return false;
     }
 
     @Override
     public boolean delete(int t) {
-        try {
-            String query = "DELETE FROM accounts WHERE id = ?";
-            PreparedStatement stmt = con.prepareStatement((String) query);
-            stmt.setInt(1, t);
-            return stmt.executeUpdate() != 0;
-        } catch (SQLException ex) {
-            Logger.getLogger(AccountModel.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return false;
     }
 
     @Override
-    public boolean delete(String t) {
+    public boolean delete(String username) {
+        try {
+            String query = "DELETE FROM accounts WHERE username = ?";
+            PreparedStatement stmt = con.prepareStatement((String) query);
+            stmt.setString(1, username);
+            return stmt.executeUpdate() != 0;
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return false;
     }
 
@@ -128,6 +142,10 @@ public class AccountModel extends Model<Account> {
                 account = new Account();
                 account.setUsername(rs.getString("username"));
                 account.setPassword(rs.getString("password"));
+                
+                ArrayList<Role> roles = ModelGroup.roleMdl.search(account.getUsername());
+                account.setRoles(roles);
+                
                 return account;
             }
         } catch (SQLException ex) {

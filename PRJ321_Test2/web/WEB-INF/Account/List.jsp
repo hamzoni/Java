@@ -14,14 +14,14 @@
         <jsp:include page="/WEB-INF/Layout/HeaderContent.jsp"></jsp:include>
             <div class="container">
                 <div class="notification">
-                    
+
                     <nav class="breadcrumb" aria-label="breadcrumbs">
                         <ul>
                             <li><a>Users</a></li>
                             <li class="is-active"><a aria-current="page">Listing</a></li>
                         </ul>
                     </nav>
-                    
+
                     <h1 class="title">Listing</h1>
                     <table class="table is-bordered is-striped is-narrow is-fullwidth">
                         <thead>
@@ -41,7 +41,6 @@
                     <tr>
                         <td><%= account.getUsername()%></td>
 
-                 
                         <td class="text-center">
                             <% if (account.hasRole(FeaturesConfig.Account.READ)) { %>
                             <i class="fa fa-check-circle" aria-hidden="true"></i>
@@ -64,9 +63,17 @@
                         </td>
 
                         <td class="text-center">
-                            <a href="update"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                            <form action="update" action="get">
+                                <input type="hidden" name="username" value="<%= account.getUsername() %>"/>
+                                <button type="submit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button>
+                            </form>
                         </td>
-                        <td class="text-center"><i class="fa fa-times" aria-hidden="true"></td>
+                        <td class="text-center">
+                            <form action="delete" method="post">
+                                <input type="hidden" name="username" value="<%= account.getUsername() %>"/>
+                                <button type="submit"><i class="fa fa-times" aria-hidden="true"/></i></button>
+                            </form>
+                        </td>
                     </tr>
                     <% }%>
                 </table>

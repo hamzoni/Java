@@ -1,3 +1,4 @@
+<%@page import="Config.PathConfig"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <% 
     String navbar = (String) request.getAttribute("navbar"); 
@@ -23,7 +24,7 @@
                         Account
                     </a>
                     <span class="nav-item">
-                        <a class="button is-info is-inverted">
+                        <a class="button is-info is-inverted" href="<%= PathConfig.root %>auth/logout">
                             <span class="icon">
                                 <i class="fa fa-sign-out" aria-hidden="true"></i>
                             </span>
@@ -53,11 +54,11 @@
             <div class="container">
                 <ul>
                     <li<% if (navbar.equals("home")) { %> class="is-active" <% } %>>
-                        <a href="/PRJ321_Test2/">Home</a>
+                        <a href="<%= PathConfig.root %>home">Home</a>
                     </li>
         
                     <li<% if (navbar.equals("account.list")) { %> class="is-active" <% } %>>
-                        <a href="/PRJ321_Test2/account/list">Users</a>
+                        <a href="<%= PathConfig.root %>account/list">Users</a>
                     </li>
                 </ul>
             </div>

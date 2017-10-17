@@ -11,25 +11,35 @@
         <%@ include file="Partials/Header.jsp" %>
 
         <div class="columns">
-            <div class="column is-one-quarter">
-                <%@ include file="Partials/Sidebar.jsp" %>
-            </div>
+            <%@ include file="Partials/Sidebar.jsp" %>
             <div class="column">
 
                 <section class="section">
                     <div class="container">
-
+                        <h3 class="title is-3">Category Manager</h3>
                         <div class="tile is-ancestor">
 
                             <div class="tile is-parent">
                                 <div class="tile is-child box">
                                     <!-- content start here -->
+
                                     <div class="box">
-                                        <article class="media">
-                                            <a class="button is-primary" href="${path}category/create">Create</a>
-                                        </article>
+                                        <!-- start of navigator -->
+                                        <nav class="level">
+                                            <!-- Left side -->
+                                            <div class="level-left">
+                                                <div class="level-item">
+                                                    <a class="button is-primary" href="${path}category/create">Create</a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Right side -->
+                                            <div class="level-right">
+                                            </div>
+                                        </nav>
+                                        <!-- end of navigator -->   
                                     </div>
-                                        
+
                                     <table class="table is-bordered">
                                         <thead>
                                             <tr>

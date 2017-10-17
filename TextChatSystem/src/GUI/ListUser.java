@@ -108,40 +108,20 @@ public class ListUser extends javax.swing.JFrame {
         return button_chat;
     }
 
-    public void setButton_chat(JButton button_chat) {
-        this.button_chat = button_chat;
-    }
-
     public JButton getButton_close() {
         return button_close;
-    }
-
-    public void setButton_close(JButton button_close) {
-        this.button_close = button_close;
     }
 
     public JButton getButton_offlineMessages() {
         return button_offlineMessages;
     }
-
-    public void setButton_offlineMessages(JButton button_offlineMessages) {
-        this.button_offlineMessages = button_offlineMessages;
-    }
-
+    
     public JLabel getLabel_fullName() {
         return label_fullName;
     }
 
-    public void setLabel_fullName(JLabel label_fullName) {
-        this.label_fullName = label_fullName;
-    }
-
     public JList<String> getList_users() {
         return list_users;
-    }
-
-    public void setList_users(JList<String> list_users) {
-        this.list_users = list_users;
     }
 
     public JLabel getServer_status() {

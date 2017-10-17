@@ -10,7 +10,7 @@
     <body>
         <%@ include file="Partials/Header.jsp" %>
         <div class="columns">
-            <div class="column is-one-quarter">
+            <div class="column">
                 <%@ include file="Partials/Sidebar.jsp" %>
             </div>
             <div class="column">
@@ -18,6 +18,13 @@
                 <section class="section">
                     <div class="container">
 
+                        <nav class="breadcrumb" aria-label="breadcrumbs">
+                            <ul>
+                                <li><a href="${path}category/list">Category Manager</a></li>
+                                <li class="is-active"><a href="${path}category/create" aria-current="page">Create Category</a></li>
+                            </ul>
+                        </nav>
+                        
                         <div class="tile is-ancestor">
 
                             <div class="tile is-parent">
@@ -33,9 +40,6 @@
                                         <div class="field is-grouped">
                                             <div class="control">
                                                 <button class="button is-primary">Submit</button>
-                                            </div>
-                                            <div class="control">
-                                                <button class="button is-text">Cancel</button>
                                             </div>
                                         </div>
                                     </form>

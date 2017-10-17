@@ -1,8 +1,13 @@
 
+<%@page import="Entities.Role"%>
+<%@page import="Entities.Account"%>
 <%@page import="Entities.Feature"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="Config.FeaturesConfig"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    Account acc = (Account) request.getAttribute("account");
+%>
 <!DOCTYPE html>
 <html>
     <jsp:include page="/WEB-INF/Layout/Header.jsp"></jsp:include>
@@ -10,18 +15,19 @@
         <jsp:include page="/WEB-INF/Layout/HeaderContent.jsp"></jsp:include>
             <div class="container">
                 <div class="notification">
-                    <h1 class="title">Update Account</h1>
-                    <form name="create" method="post">
+                    <h1 class="title">Update Account <%= acc.getUsername() %></h1>
+                    <form name="update" method="post">
+                        <input type="hidden" name="usernameRoot" value="<%= acc.getUsername() %>"/>
                         <div class="field">
                             <label class="label">Username</label>
                             <div class="control">
-                                <input class="input" type="text" name="username" value=""/>
+                                <input class="input" type="text" name="login" value="<%= acc.getUsername() %>"/>
                             </div>
                         </div>
                         <div class="field">
                             <label class="label">Password</label>
                             <div class="control">
-                                <input class="input" type="password" name="password"/>
+                                <input class="input" type="password" name="password" value="<%= acc.getPassword()%>"/>
                             </div>
                         </div>
 
@@ -43,10 +49,18 @@
                                     </thead>
                                     <tr>
                                         <td><input type="checkbox" id="allAccountFeatures"/></td>
-                                        <td><input type="checkbox" name="features" acc-ft value="<%= FeaturesConfig.Account.READ %>"/></td>
-                                        <td><input type="checkbox" name="features" acc-ft value="<%= FeaturesConfig.Account.WRITE %>"/></td>
-                                        <td><input type="checkbox" name="features" acc-ft value="<%= FeaturesConfig.Account.UPDATE %>"/></td>
-                                        <td><input type="checkbox" name="features" acc-ft value="<%= FeaturesConfig.Account.DELETE %>"/></td>
+                                        <% int i; int ftr[] = FeaturesConfig.Account.ACCF; %>
+                                        <% for (i = 0; i < ftr.length; i++) { %>
+                                        <td><input type="checkbox" name="features" acc-ft 
+                                            value="<%= ftr[i] %>"
+                                            
+                                            <% if (acc.hasRole(ftr[i])) { %>
+                                                checked="true"
+                                            <% } %>
+                                            
+                                            />
+                                        </td>
+                                        <% } %>
                                     </tr>
                                 </table>
                             </div>

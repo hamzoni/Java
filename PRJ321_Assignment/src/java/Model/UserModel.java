@@ -1,12 +1,14 @@
 
 package Model;
 
+import Config.RoleConfig;
 import Entities.Category;
 import Entities.Post;
 import Entities.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,11 +45,35 @@ public class UserModel extends Model<User> {
         return user;
     }
     
-    public ArrayList<User> pagination(int page, int size) {
+    public ArrayList<User> pagination(int page, int size, String search, String privilege) {
         ArrayList<User> users = new ArrayList<User>();
         if (page <= 0) return null;
         try {
-            String query = "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY id DESC) as r, * FROM " + tableName + ") A WHERE r BETWEEN ? AND ?";
+            String query = "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY id DESC) as r, * FROM ( " +
+                " SELECT * FROM users " +
+                " LEFT JOIN ( " +
+                " SELECT users.id AS user_id, COUNT(*) AS no_posts " +
+                " FROM users INNER JOIN posts " +
+                " ON posts.user_id = users.id GROUP BY users.id) C " +
+                " ON C.user_id = users.id " +
+                " ) B ) A " +
+                " WHERE r BETWEEN ? AND ? ";
+            
+            if (search != null) {
+                query += " AND (name LIKE '%"
+                        + search + "%' OR email LIKE '%"
+                        + search + "%' OR username LIKE '%"
+                        + search + "%') ";
+            }
+            
+            if (privilege != null) {
+                try {
+                    int priv = Integer.parseInt(privilege);
+                    if (RoleConfig.isRoleAvailable(priv) && priv != -1)
+                        query += " AND privilege = " + privilege;
+                } catch (Exception e) {}
+            }
+                    
             PreparedStatement pstm =  con.prepareStatement(query);
             pstm.setInt(1, (page - 1) * size + 1);
             pstm.setInt(2, page * size);
@@ -68,6 +94,39 @@ public class UserModel extends Model<User> {
             Logger.getLogger(UserModel.class.getName()).log(Level.SEVERE, null, ex);
         }
         return users;
+    }
+    
+    public int countSearch(String search, String privilege) {
+        int c = 0;
+        try {
+             String query = "SELECT COUNT(*) FROM users\n" +
+            "LEFT JOIN ( SELECT users.id AS user_id, COUNT(*) AS no_posts \n" +
+            "FROM users INNER JOIN posts \n" +
+            "ON posts.user_id = users.id GROUP BY users.id) C\n" +
+            "ON C.user_id = users.id\n" +
+            "WHERE 1 = 1 ";
+            
+            if (search != null) {
+                query += " AND (name LIKE '%"
+                        + search + "%' OR email LIKE '%"
+                        + search + "%' OR username LIKE '%"
+                        + search + "%') ";
+            }
+            
+            if (privilege != null) {
+                try {
+                    int priv = Integer.parseInt(privilege);
+                    if (RoleConfig.isRoleAvailable(priv) && priv != -1)
+                        query += " AND privilege = " + privilege;
+                } catch (Exception e) {}
+            }
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) c = rs.getInt(1);
+        } catch (SQLException ex) {
+            Logger.getLogger(Model.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return c;
     }
     
     @Override
