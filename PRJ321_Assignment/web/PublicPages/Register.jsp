@@ -17,35 +17,27 @@
                                 <div class="field">
                                     <label class="label">Username</label>
                                     <div class="control has-icons-left has-icons-right">
-                                        <input class="input is-success" type="text" placeholder="Username / Email" value="">
+                                        <input name="username" class="input" type="text" placeholder="Username / Email" value="">
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-user"></i>
                                         </span>
-                                        <span class="icon is-small is-right">
-                                            <i class="fa fa-check"></i>
-                                        </span>
                                     </div>
-                                    <p class="help is-success">This username is available</p>
                                 </div>
 
                                 <div class="field">
                                     <label class="label">Password</label>
                                     <div class="control has-icons-left has-icons-right">
-                                        <input class="input is-danger" type="password" placeholder="Password" value="">
+                                        <input name="password" class="input" type="password" placeholder="Password" value="">
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-key"></i>
                                         </span>
-                                        <span class="icon is-small is-right">
-                                            <i class="fa fa-warning"></i>
-                                        </span>
                                     </div>
-                                    <p class="help is-danger">This email is invalid</p>
                                 </div>
 
                                 <div class="field">
                                     <label class="label">Name</label>
                                     <div class="control has-icons-left has-icons-right">
-                                        <input class="input" type="text" placeholder="Name" value="">
+                                        <input name="name" class="input" type="text" placeholder="Name" value="">
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-user-o"></i>
                                         </span>
@@ -55,7 +47,7 @@
                                 <div class="field">
                                     <label class="label">Email</label>
                                     <div class="control has-icons-left has-icons-right">
-                                        <input class="input" type="email" placeholder="Email" value="">
+                                        <input name="email" class="input" type="email" placeholder="Email" value="">
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-envelope  "></i>
                                         </span>

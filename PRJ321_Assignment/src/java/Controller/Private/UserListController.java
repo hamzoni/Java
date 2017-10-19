@@ -18,7 +18,7 @@ public class UserListController extends Authentication {
     @Override
     public void get(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!authorized(request, response, new int[]{RoleConfig.ADMIN})) {
-            response.sendRedirect(PathConfig.ROOT + "user/list");
+            response.sendRedirect(PathConfig.ROOT + "post/list");
             return;
         }
         int page = 1;

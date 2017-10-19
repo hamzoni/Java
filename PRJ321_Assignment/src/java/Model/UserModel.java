@@ -172,6 +172,30 @@ public class UserModel extends Model<User> {
         }
         return users;
     }
+    
+    public User search(String username) {
+        try {
+            String query = "SELECT * FROM " + tableName + " WHERE username = ?";
+            PreparedStatement pstm = con.prepareStatement(query);
+            pstm.setString(1, username);
+            ResultSet rs = pstm.executeQuery();
+            while (rs.next()) {
+                User user = new User();
+                
+                user.setId(rs.getInt("id"));
+                user.setName(rs.getString("name"));
+                user.setEmail(rs.getString("email"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                user.setPrivilege(rs.getInt("privilege"));
+                
+                return user;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 
     @Override
     public User search(int i) {
